@@ -1,0 +1,127 @@
+# ============================================================
+# FILE: docker-compose.yml (at project root)
+# ============================================================
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: edlearn-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_secret}
+      MYSQL_DATABASE: edlearn_db
+      MYSQL_USER: edlearn_user
+      MYSQL_PASSWORD: ${DB_PASSWORD:-edlearn_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docs/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: edlearn-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/edlearn_db?useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true
+      DB_USERNAME: edlearn_user
+      DB_PASSWORD: ${DB_PASSWORD:-edlearn_pass}
+      JWT_SECRET: ${JWT_SECRET:-SIH25019-EdLearn-SecretKey-Nabha-Rural-Education-Platform-2024}
+      UPLOAD_PATH: /uploads/edlearn
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads_data:/uploads/edlearn
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: edlearn-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+
+volumes:
+  mysql_data:
+  uploads_data:
+
+networks:
+  default:
+    name: edlearn-network
+
+---
+# ============================================================
+# FILE: frontend/nginx.conf
+# ============================================================
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Gzip compression (bandwidth saving for rural areas)
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
+    gzip_min_length 1024;
+    gzip_comp_level 6;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN"    always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # PWA — serve index.html for all client-side routes
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Service worker — no cache
+    location = /sw.js {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        expires 0;
+    }
+
+    # Static assets — long cache
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2|woff)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Proxy API to Spring Boot
+    location /api/ {
+        proxy_pass http://backend:8080/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_cache_bypass $http_upgrade;
+        client_max_body_size 200M;
+        proxy_read_timeout 120s;
+    }
+
+    # Uploaded files
+    location /uploads/ {
+        proxy_pass http://backend:8080/uploads/;
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+}

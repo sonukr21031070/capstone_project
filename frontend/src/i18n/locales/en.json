@@ -1,0 +1,65 @@
+{
+  "app": { "name": "EdLearn", "tagline": "Digital Learning for Rural Students of Nabha" },
+  "nav": {
+    "dashboard": "Dashboard", "subjects": "Subjects", "notes": "Notes",
+    "videos": "Videos", "quizzes": "Quizzes", "exercises": "Exercises",
+    "progress": "Progress", "announcements": "Announcements",
+    "profile": "Profile", "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login", "register": "Register", "username": "Username",
+    "password": "Password", "email": "Email", "fullName": "Full Name",
+    "phone": "Phone Number", "role": "Role", "student": "Student",
+    "teacher": "Teacher", "parent": "Parent", "class": "Class",
+    "loginBtn": "Login", "registerBtn": "Register",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "pendingApproval": "Your account is awaiting admin approval"
+  },
+  "student": {
+    "mySubjects": "My Subjects", "chapterNotes": "Chapter Notes",
+    "watchVideo": "Watch Video", "takeQuiz": "Take Quiz",
+    "myProgress": "My Progress", "downloadNote": "Download Note",
+    "listenNote": "Listen to Note", "speakAnswer": "Speak Answer",
+    "difficulty": { "easy": "Easy", "medium": "Medium", "hard": "Hard" },
+    "confidence": {
+      "how_confident": "How confident do you feel after this lesson?",
+      "low": "Low", "medium": "Medium", "high": "High"
+    },
+    "score": "Score", "correctAnswers": "Correct Answers",
+    "timeSpent": "Time Spent", "chaptersCompleted": "Chapters Completed",
+    "exercises": "Exercises", "myExercises": "My Exercises",
+    "submitExercise": "Submit Exercise", "viewSubmission": "View Submission"
+  },
+  "teacher": {
+    "uploadNote": "Upload Note", "uploadVideo": "Upload Video",
+    "createQuiz": "Create Quiz", "createExercise": "Create Exercise",
+    "myContent": "My Content", "publish": "Publish", "draft": "Draft",
+    "selectClass": "Select Class", "selectSubject": "Select Subject",
+    "selectChapter": "Select Chapter", "remarks": "Student Remarks"
+  },
+  "admin": {
+    "pendingApprovals": "Pending Approvals", "approve": "Approve", "reject": "Reject",
+    "allStudents": "All Students", "allTeachers": "All Teachers",
+    "allParents": "All Parents", "createAnnouncement": "Create Announcement",
+    "totalUsers": "Total Users"
+  },
+  "parent": {
+    "myChildren": "My Children", "childProgress": "Child's Progress",
+    "childRemarks": "Teacher Remarks", "teacherRemarks": "Teacher Remarks",
+    "weakSubjects": "Weak Subjects", "studyTime": "Study Time",
+    "performance": "Performance Analytics", "notifications": "Notifications",
+    "messages": "Direct Messages", "communication": "Communication"
+  },
+  "common": {
+    "loading": "Loading...", "save": "Save", "cancel": "Cancel",
+    "delete": "Delete", "edit": "Edit", "search": "Search",
+    "noData": "No data found", "error": "Something went wrong", "success": "Success",
+    "offline": "You are offline", "syncing": "Syncing...",
+    "downloadedOffline": "Downloaded for offline use"
+  },
+  "accessibility": {
+    "highContrast": "High Contrast", "largeText": "Large Text",
+    "voiceNav": "Voice Navigation", "listenPage": "Listen to Page"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "app": { "name": "EdLearn", "tagline": "ਨਭੇ ਦੇ ਪੇਂਡੂ ਵਿਦਿਆਰਥੀਆਂ ਲਈ ਡਿਜੀਟਲ ਸਿੱਖਿਆ" },
+  "nav": {
+    "dashboard": "ਡੈਸ਼ਬੋਰਡ", "subjects": "ਵਿਸ਼ੇ", "notes": "ਨੋਟਸ",
+    "videos": "ਵੀਡੀਓ", "quizzes": "ਕੁਇਜ਼", "exercises": "ਅਭਿਆਸ",
+    "progress": "ਤਰੱਕੀ", "announcements": "ਸੂਚਨਾਵਾਂ",
+    "profile": "ਪ੍ਰੋਫਾਈਲ", "logout": "ਲੌਗ ਆਊਟ"
+  },
+  "auth": {
+    "login": "ਲੌਗਿਨ", "register": "ਰਜਿਸਟ੍ਰੇਸ਼ਨ", "username": "ਉਪਯੋਗਕਰਤਾ ਨਾਮ",
+    "password": "ਪਾਸਵਰਡ", "email": "ਈਮੇਲ", "fullName": "ਪੂਰਾ ਨਾਮ",
+    "phone": "ਫੋਨ ਨੰਬਰ", "role": "ਭੂਮਿਕਾ", "student": "ਵਿਦਿਆਰਥੀ",
+    "teacher": "ਅਧਿਆਪਕ", "parent": "ਮਾਪੇ", "class": "ਜਮਾਤ",
+    "loginBtn": "ਲੌਗਿਨ", "registerBtn": "ਰਜਿਸਟਰ",
+    "alreadyHaveAccount": "ਪਹਿਲਾਂ ਤੋਂ ਖਾਤਾ ਹੈ?",
+    "noAccount": "ਖਾਤਾ ਨਹੀਂ ਹੈ?",
+    "pendingApproval": "ਤੁਹਾਡਾ ਖਾਤਾ ਪ੍ਰਸ਼ਾਸਕ ਦੀ ਮਨਜ਼ੂਰੀ ਦੀ ਉਡੀਕ ਵਿੱਚ ਹੈ"
+  },
+  "student": {
+    "mySubjects": "ਮੇਰੇ ਵਿਸ਼ੇ", "chapterNotes": "ਅਧਿਆਏ ਨੋਟਸ",
+    "watchVideo": "ਵੀਡੀਓ ਦੇਖੋ", "takeQuiz": "ਕੁਇਜ਼ ਦਿਓ",
+    "myProgress": "ਮੇਰੀ ਤਰੱਕੀ", "downloadNote": "ਨੋਟ ਡਾਊਨਲੋਡ ਕਰੋ",
+    "listenNote": "ਨੋਟ ਸੁਣੋ", "speakAnswer": "ਬੋਲ ਕੇ ਜਵਾਬ ਦਿਓ",
+    "difficulty": { "easy": "ਆਸਾਨ", "medium": "ਮੱਧਮ", "hard": "ਔਖਾ" },
+    "confidence": {
+      "how_confident": "ਇਸ ਪਾਠ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਕਿੰਨੇ ਆਤਮਵਿਸ਼ਵਾਸੀ ਮਹਿਸੂਸ ਕਰਦੇ ਹੋ?",
+      "low": "ਘੱਟ", "medium": "ਮੱਧਮ", "high": "ਵੱਧ"
+    },
+    "score": "ਅੰਕ", "correctAnswers": "ਸਹੀ ਜਵਾਬ", "timeSpent": "ਬਿਤਾਇਆ ਸਮਾਂ", "chaptersCompleted": "ਅਧਿਆਏ ਪੂਰੇ",
+    "exercises": "ਅਭਿਆਸ", "myExercises": "ਮੇਰੇ ਅਭਿਆਸ",
+    "submitExercise": "ਅਭਿਆਸ ਜਮਾ ਕਰੋ", "viewSubmission": "ਜਮਾ ਨੂੰ ਵੇਖੋ"
+  },
+  "teacher": {
+    "uploadNote": "ਨੋਟ ਅਪਲੋਡ ਕਰੋ", "uploadVideo": "ਵੀਡੀਓ ਅਪਲੋਡ ਕਰੋ",
+    "createQuiz": "ਕੁਇਜ਼ ਬਣਾਓ", "createExercise": "ਅਭਿਆਸ ਬਣਾਓ",
+    "myContent": "ਮੇਰੀ ਸਮੱਗਰੀ", "publish": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ", "draft": "ਡਰਾਫਟ",
+    "selectClass": "ਜਮਾਤ ਚੁਣੋ", "selectSubject": "ਵਿਸ਼ਾ ਚੁਣੋ", "selectChapter": "ਅਧਿਆਏ ਚੁਣੋ",
+    "remarks": "ਵਿਦਿਆਰਥੀ ਟਿੱਪਣੀਆਂ"
+  },
+  "admin": {
+    "pendingApprovals": "ਲੰਬਿਤ ਮਨਜ਼ੂਰੀਆਂ", "approve": "ਮਨਜ਼ੂਰ ਕਰੋ", "reject": "ਰੱਦ ਕਰੋ",
+    "allStudents": "ਸਾਰੇ ਵਿਦਿਆਰਥੀ", "allTeachers": "ਸਾਰੇ ਅਧਿਆਪਕ",
+    "allParents": "ਸਾਰੇ ਮਾਪੇ", "createAnnouncement": "ਸੂਚਨਾ ਬਣਾਓ", "totalUsers": "ਕੁੱਲ ਉਪਯੋਗਕਰਤਾ"
+  },
+  "parent": {
+    "myChildren": "ਮੇਰੇ ਬੱਚੇ", "childProgress": "ਬੱਚੇ ਦੀ ਤਰੱਕੀ",
+    "teacherRemarks": "ਅਧਿਆਪਕ ਦੀਆਂ ਟਿੱਪਣੀਆਂ", "weakSubjects": "ਕਮਜ਼ੋਰ ਵਿਸ਼ੇ", "studyTime": "ਪੜ੍ਹਾਈ ਦਾ ਸਮਾਂ"
+  },
+  "common": {
+    "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...", "save": "ਸੁਰੱਖਿਅਤ ਕਰੋ", "cancel": "ਰੱਦ ਕਰੋ",
+    "delete": "ਮਿਟਾਓ", "edit": "ਸੋਧੋ", "search": "ਖੋਜੋ",
+    "noData": "ਕੋਈ ਡੇਟਾ ਨਹੀਂ", "error": "ਕੁਝ ਗਲਤ ਹੋਇਆ", "success": "ਸਫਲ",
+    "offline": "ਤੁਸੀਂ ਔਫਲਾਈਨ ਹੋ", "syncing": "ਸਿੰਕ ਹੋ ਰਿਹਾ ਹੈ...", "downloadedOffline": "ਔਫਲਾਈਨ ਡਾਊਨਲੋਡ ਕੀਤਾ"
+  },
+  "accessibility": {
+    "highContrast": "ਉੱਚ ਵਿਪਰੀਤਤਾ", "largeText": "ਵੱਡਾ ਪਾਠ",
+    "voiceNav": "ਆਵਾਜ਼ ਨੇਵੀਗੇਸ਼ਨ", "listenPage": "ਪੰਨਾ ਸੁਣੋ"
+  }
+}

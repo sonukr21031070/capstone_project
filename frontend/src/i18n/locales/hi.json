@@ -1,0 +1,116 @@
+{
+  "app": {
+    "name": "EdLearn",
+    "tagline": "नभा के ग्रामीण विद्यार्थियों के लिए डिजिटल शिक्षा"
+  },
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "subjects": "विषय",
+    "notes": "नोट्स",
+    "videos": "वीडियो",
+    "quizzes": "क्विज़",
+    "exercises": "अभ्यास",
+    "progress": "प्रगति",
+    "announcements": "सूचनाएं",
+    "profile": "प्रोफाइल",
+    "logout": "लॉग आउट"
+  },
+  "auth": {
+    "login": "लॉगिन करें",
+    "register": "पंजीकरण करें",
+    "username": "उपयोगकर्ता नाम",
+    "password": "पासवर्ड",
+    "email": "ईमेल",
+    "fullName": "पूरा नाम",
+    "phone": "फोन नंबर",
+    "role": "भूमिका",
+    "student": "छात्र",
+    "teacher": "शिक्षक",
+    "parent": "अभिभावक",
+    "class": "कक्षा",
+    "loginBtn": "लॉगिन",
+    "registerBtn": "पंजीकरण",
+    "alreadyHaveAccount": "पहले से खाता है?",
+    "noAccount": "खाता नहीं है?",
+    "pendingApproval": "आपका खाता प्रशासक की अनुमति की प्रतीक्षा में है"
+  },
+  "student": {
+    "mySubjects": "मेरे विषय",
+    "chapterNotes": "अध्याय नोट्स",
+    "watchVideo": "वीडियो देखें",
+    "takeQuiz": "क्विज़ दें",
+    "myProgress": "मेरी प्रगति",
+    "downloadNote": "नोट डाउनलोड करें",
+    "listenNote": "नोट सुनें",
+    "speakAnswer": "बोलकर जवाब दें",
+    "difficulty": {
+      "easy": "सरल",
+      "medium": "मध्यम",
+      "hard": "कठिन"
+    },
+    "confidence": {
+      "how_confident": "इस पाठ के बाद आप कितना आत्मविश्वास महसूस करते हैं?",
+      "low": "कम",
+      "medium": "मध्यम",
+      "high": "अधिक"
+    },
+    "score": "अंक",
+    "correctAnswers": "सही उत्तर",
+    "timeSpent": "समय व्यतीत",
+    "chaptersCompleted": "अध्याय पूरे हुए",
+    "exercises": "अभ्यास",
+    "myExercises": "मेरे अभ्यास",
+    "submitExercise": "अभ्यास जमा करें",
+    "viewSubmission": "जमा देखें"
+  },
+  "teacher": {
+    "uploadNote": "नोट अपलोड करें",
+    "uploadVideo": "वीडियो अपलोड करें",
+    "createQuiz": "क्विज़ बनाएं",
+    "createExercise": "अभ्यास बनाएं",
+    "myContent": "मेरी सामग्री",
+    "publish": "प्रकाशित करें",
+    "draft": "ड्राफ्ट",
+    "selectClass": "कक्षा चुनें",
+    "selectSubject": "विषय चुनें",
+    "selectChapter": "अध्याय चुनें",
+    "remarks": "छात्र टिप्पणियां"
+  },
+  "admin": {
+    "pendingApprovals": "लंबित अनुमोदन",
+    "approve": "अनुमोदित करें",
+    "reject": "अस्वीकार करें",
+    "allStudents": "सभी छात्र",
+    "allTeachers": "सभी शिक्षक",
+    "allParents": "सभी अभिभावक",
+    "createAnnouncement": "सूचना बनाएं",
+    "totalUsers": "कुल उपयोगकर्ता"
+  },
+  "parent": {
+    "myChildren": "मेरे बच्चे",
+    "childProgress": "बच्चे की प्रगति",
+    "teacherRemarks": "शिक्षक की टिप्पणी",
+    "weakSubjects": "कमज़ोर विषय",
+    "studyTime": "पढ़ाई का समय"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "search": "खोजें",
+    "noData": "कोई डेटा नहीं",
+    "error": "कुछ गलत हुआ",
+    "success": "सफल",
+    "offline": "आप ऑफलाइन हैं",
+    "syncing": "सिंक हो रहा है...",
+    "downloadedOffline": "ऑफलाइन डाउनलोड किया"
+  },
+  "accessibility": {
+    "highContrast": "उच्च विपरीतता",
+    "largeText": "बड़ा पाठ",
+    "voiceNav": "आवाज़ नेविगेशन",
+    "listenPage": "पेज सुनें"
+  }
+}

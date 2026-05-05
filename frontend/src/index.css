@@ -1,0 +1,143 @@
+/* ============================================================
+   FILE: src/index.css
+   Global styles — high contrast, large text, accessibility
+   ============================================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS custom properties ── */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* ── Focus visible ring (keyboard nav) ── */
+*:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+*:focus:not(:focus-visible) { outline: none; }
+
+/* ── Skip to content link (screen readers) ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: #4f46e5;
+  color: white;
+  border-radius: 0 0 8px 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+/* ── High contrast mode ── */
+html.high-contrast {
+  filter: contrast(1.5);
+}
+html.high-contrast body {
+  background-color: #000;
+  color: #fff;
+}
+html.high-contrast .bg-white { background-color: #000 !important; }
+html.high-contrast .text-gray-500,
+html.high-contrast .text-gray-600 { color: #ccc !important; }
+html.high-contrast .border-gray-200 { border-color: #fff !important; }
+html.high-contrast a,
+html.high-contrast button { color: #ffd700; }
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+  background-color: #111;
+  color: #fff;
+  border-color: #fff;
+}
+
+/* ── Large text mode ── */
+html.large-text {
+  font-size: 20px;
+}
+html.large-text .text-xs { font-size: 0.85rem !important; }
+html.large-text .text-sm { font-size: 1rem !important; }
+html.large-text .text-base { font-size: 1.15rem !important; }
+html.large-text .text-lg { font-size: 1.35rem !important; }
+html.large-text .text-xl { font-size: 1.55rem !important; }
+html.large-text .text-2xl { font-size: 1.8rem !important; }
+
+/* ── Line clamp utility ── */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── PWA offline indicator ── */
+@keyframes pulse-banner {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+.offline-pulse { animation: pulse-banner 2s ease-in-out infinite; }
+
+/* ── Quiz timer warning ── */
+@keyframes timer-warn {
+  0%, 100% { background-color: rgb(254 226 226); }
+  50% { background-color: rgb(252 165 165); }
+}
+.timer-warning { animation: timer-warn 1s ease-in-out infinite; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* ── Screen reader only utility ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ── Print styles ── */
+@media print {
+  .sidebar, header, button, nav { display: none !important; }
+  main { padding: 0 !important; }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
