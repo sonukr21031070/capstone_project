@@ -139,6 +139,7 @@ public class AdminService {
         return buildPagedResponse(usersPage.map(this::mapUserToResponse), page);
     }
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getClassTeacherMapping() {
         try {
             List<ClassSubjectTeacher> mappings = classSubjectTeacherRepository.findAll();
@@ -459,6 +460,7 @@ public class AdminService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getClassesOverview() {
         log.info("📋 Fetching classes overview");
         try {
@@ -498,6 +500,7 @@ public class AdminService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getStudentsByClass(Integer classId) {
         log.info("📚 Fetching students for class ID: {}", classId);
         try {
@@ -532,6 +535,7 @@ public class AdminService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getTeachersByClass(Integer classId) {
         log.info("👨‍🏫 Fetching teachers for class ID: {}", classId);
         try {
@@ -593,6 +597,7 @@ public class AdminService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getAllStudentsWithoutClass() {
         log.info("📝 Fetching students without class");
         try {
