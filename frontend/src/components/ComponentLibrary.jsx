@@ -206,12 +206,14 @@ const PARENT_NAV = [
 ]
 
 const ADMIN_NAV = [
-  { to: '/admin',             icon: LayoutDashboard, key: 'nav.dashboard', end: true },
-  { to: '/admin/approvals',   icon: UserCheck,       key: 'admin.pendingApprovals' },
-  { to: '/admin/users',       icon: Users,           key: 'admin.allStudents' },
-  { to: '/admin/announcements',icon: Bell,           key: 'nav.announcements' },
-  { to: '/admin/mappings',    icon: Settings,        key: 'admin.mappings' },
-  { to: '/admin/reports',     icon: BarChart3,       key: 'admin.reports' }
+   { to: '/admin',             icon: LayoutDashboard, key: 'nav.dashboard', end: true },
+   { to: '/admin/approvals',   icon: UserCheck,       key: 'admin.pendingApprovals' },
+   { to: '/admin/users',       icon: Users,           key: 'admin.allStudents' },
+   { to: '/admin/classes',     icon: BookOpen,        key: 'admin.classOverview' },
+   { to: '/admin/assign-students',icon: UserCheck,    key: 'admin.assignStudents' },
+   { to: '/admin/announcements',icon: Bell,           key: 'nav.announcements' },
+   { to: '/admin/mappings',    icon: Settings,        key: 'admin.mappings' },
+   { to: '/admin/reports',     icon: BarChart3,       key: 'admin.reports' }
 ]
 
 const NAV_MAP = { STUDENT: STUDENT_NAV, TEACHER: TEACHER_NAV, PARENT: PARENT_NAV, ADMIN: ADMIN_NAV }

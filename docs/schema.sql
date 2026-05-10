@@ -151,6 +151,101 @@ CREATE TABLE chapters (
     INDEX idx_subject_class (subject_id, class_id)
 );
 
+-- Sample chapters data for all classes and subjects
+-- CLASS 1: Mathematics (Subject 1)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(1, 1, 'Numbers 1 to 10', 'संख्या 1 से 10', 'ਨੰਬਰ 1 ਤੋਂ 10', 1, TRUE),
+(1, 1, 'Addition Basics', 'जोड़ की मूल बातें', 'ਜੋੜ ਦੀ ਮੂਲ ਚੀਜ़ें', 2, TRUE),
+(1, 1, 'Subtraction Basics', 'घटाव की मूल बातें', 'ਘਟਾਓ ਦੀ ਮੂਲ ਚੀਜ਼ਾਂ', 3, TRUE),
+(1, 1, 'Shapes and Sizes', 'आकार और आकार', 'ਆਕਾਰ ਅਤੇ ਆਕਾਰ', 4, TRUE);
+
+-- CLASS 1: Hindi (Subject 2)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(2, 1, 'वर्णमाला (Alphabet)', 'वर्णमाला', 'ਵਰਨਮਾਲਾ', 1, TRUE),
+(2, 1, 'सरल शब्द (Simple Words)', 'सरल शब्द', 'ਸਧਾਰਨ ਸ਼ਬਦ', 2, TRUE),
+(2, 1, 'पठन कौशल (Reading Skills)', 'पठन कौशल', 'ਪੜ੍ਹਨ ਦੀ ਮੁਹਾਰਤ', 3, TRUE);
+
+-- CLASS 1: English (Subject 3)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(3, 1, 'Alphabet A-Z', 'वर्णमाला A-Z', 'ਅਲਫਾਬੈਟ A-Z', 1, TRUE),
+(3, 1, 'Simple Sentences', 'सरल वाक्य', 'ਸਧਾਰਨ ਵਾਕ', 2, TRUE),
+(3, 1, 'Colors and Objects', 'रंग और वस्तुएं', 'ਰੰਗ ਅਤੇ ਵਸਤੂਆਂ', 3, TRUE);
+
+-- CLASS 1: Science (Subject 4)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(4, 1, 'Our Body', 'हमारा शरीर', 'ਸਾਡਾ ਸਰੀਰ', 1, TRUE),
+(4, 1, 'Plants and Animals', 'पौधे और जानवर', 'ਪੌਦੇ ਅਤੇ ਜਾਨਵਰ', 2, TRUE),
+(4, 1, 'Weather and Seasons', 'मौसम और ऋतुएं', 'ਮੌਸਮ ਅਤੇ ਰੁੱਤਾਂ', 3, TRUE);
+
+-- CLASS 1: Social Studies (Subject 5)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(5, 1, 'My Family', 'मेरा परिवार', 'ਮੇਰਾ ਪਰਿਵਾਰ', 1, TRUE),
+(5, 1, 'My School', 'मेरा स्कूल', 'ਮੇਰਾ ਸਕੂਲ', 2, TRUE),
+(5, 1, 'Community Helpers', 'समुदाय सहायक', 'ਸਮੁਦਾਇ ਸਹਾਇਤਕ', 3, TRUE);
+
+-- CLASS 6: Mathematics (Subject 1)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(1, 6, 'Knowing Our Numbers', 'हमारी संख्याओं को जानना', 'ਸਾਡੀਆਂ ਸੰਖਿਆਵਾਂ ਨੂੰ ਜਾਣਨਾ', 1, TRUE),
+(1, 6, 'Whole Numbers', 'पूर्ण संख्याएँ', 'ਪੂਰੀ ਸੰਖਿਆਵਾਂ', 2, TRUE),
+(1, 6, 'Playing with Numbers', 'संख्याओं के साथ खेलना', 'ਸੰਖਿਆਵਾਂ ਨਾਲ ਖੇਡਣਾ', 3, TRUE),
+(1, 6, 'Basic Geometry', 'बुनियादी ज्यामिति', 'ਬੁਨਿਆਦੀ ਜਿਓਮੈਟਰੀ', 4, TRUE);
+
+-- CLASS 6: Hindi (Subject 2)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(2, 6, 'पाठ 1: दो बैलों की कथा', 'दो बैलों की कथा', 'ਦੋ ਬੈਲਾਂ ਦੀ ਕਥਾ', 1, TRUE),
+(2, 6, 'पाठ 2: ल्हासा की ओर', 'ल्हासा की ओर', 'ਲ੍ਹਾਸਾ ਵੱਲ', 2, TRUE),
+(2, 6, 'पाठ 3: आदमी का धर्म', 'आदमी का धर्म', 'ਆਦਮੀ ਦਾ ਧਰਮ', 3, TRUE);
+
+-- CLASS 6: English (Subject 3)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(3, 6, 'A Tale of Two Animals', 'दो जानवरों की कहानी', 'ਦੋ ਜਾਨਵਰਾਂ ਦੀ ਕਹਾਣੀ', 1, TRUE),
+(3, 6, 'The Squirrel', 'गिलहरी', 'ਗਿਲਹਰੀ', 2, TRUE),
+(3, 6, 'A Game of Chance', 'संयोग का खेल', 'ਮੌਕਾ ਦਾ ਖੇਲ', 3, TRUE);
+
+-- CLASS 6: Science (Subject 4)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(4, 6, 'Food: Where Does it Come From?', 'भोजन: यह कहाँ से आता है?', 'ਭੋਜਨ: ਇਹ ਕਿੱਥੋਂ ਆਉਂਦਾ ਹੈ?', 1, TRUE),
+(4, 6, 'Components of Food', 'भोजन के घटक', 'ਭੋਜਨ ਦੇ ਹਿੱਸੇ', 2, TRUE),
+(4, 6, 'Fiber to Fabric', 'रेशा से वस्त्र तक', 'ਰੇਸ਼ੇ ਤੋਂ ਕੱਪੜੇ ਤਕ', 3, TRUE);
+
+-- CLASS 6: Social Studies (Subject 5)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(5, 6, 'The Earth in the Solar System', 'सौर प्रणाली में पृथ्वी', 'ਸੌਰ ਪ੍ਰਣਾਲੀ ਵਿੱਚ ਧਰਤੀ', 1, TRUE),
+(5, 6, 'Globe: Latitudes and Longitudes', 'ग्लोब: अक्षांश और देशांतर', 'ਗਲੋਬ: ਅਕਸ਼ਾਂਸ਼ ਅਤੇ ਲੰਬਕਾਰ', 2, TRUE),
+(5, 6, 'Maps', 'मानचित्र', 'ਨਕਸ਼ੇ', 3, TRUE);
+
+-- CLASS 8: Mathematics (Subject 1)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(1, 10, 'Rational Numbers', 'परिमेय संख्याएँ', 'ਤਰਕਯੁਕਤ ਸੰਖਿਆਵਾਂ', 1, TRUE),
+(1, 10, 'Linear Equations in One Variable', 'एक चर में रैखिक समीकरण', 'ਇੱਕ ਵੇਰੀਏਬਲ ਵਿੱਚ ਲੀਨੀਅਰ ਸਮੀਕਰਨ', 2, TRUE),
+(1, 10, 'Understanding Quadrilaterals', 'चतुर्भुजों को समझना', 'ਚਤੁਰਭੁਜਾਂ ਨੂੰ ਸਮਝਣਾ', 3, TRUE),
+(1, 10, 'Practical Geometry', 'व्यावहारिक ज्यामिति', 'ਵਿਹਾਰਕ ਜਿਓਮੈਟਰੀ', 4, TRUE),
+(1, 10, 'Data Handling', 'डेटा हैंडलिंग', 'ਡੇਟਾ ਹੈਂਡਲਿੰਗ', 5, TRUE);
+
+-- CLASS 8: Hindi (Subject 2)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(2, 10, 'दीर्घचित्तु', 'दीर्घचित्तु', 'ਦੀਘਾ-ਚਿੰਤਕ', 1, TRUE),
+(2, 10, 'संस्कृत पद्यांश', 'संस्कृत पद्यांश', 'ਸੰਸਕ੍ਰਿਤ ਪਦਾਂਸ਼', 2, TRUE),
+(2, 10, 'गद्य भाग', 'गद्य भाग', 'ਸਦ ਭਾਗ', 3, TRUE);
+
+-- CLASS 8: English (Subject 3)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(3, 10, 'Prose Passage', 'गद्य अंश', 'ਗਦਾ ਖੰਡ', 1, TRUE),
+(3, 10, 'Poem: The Butterfly', 'कविता: तितली', 'ਕਵਿਤਾ: ਤਿਤਲੀ', 2, TRUE),
+(3, 10, 'Supplementary Reader', 'पूरक पाठक', 'ਪੂਰਕ ਪਾਠਕ', 3, TRUE);
+
+-- CLASS 8: Science (Subject 4)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(4, 10, 'Combustion and Flame', 'दहन और ज्वाला', 'ਦਹਨ ਅਤੇ ਅੱਗ', 1, TRUE),
+(4, 10, 'Chemical Effects of Electric Current', 'विद्युत प्रवाह का रासायनिक प्रभाव', 'ਬਿਜਲਾਂ ਮੌਜੂਦਾ ਦਾ ਰਾਸਾਇਣਿਕ ਪ੍ਰਭਾਵ', 2, TRUE),
+(4, 10, 'Sound', 'ध्वनि', 'ਆਵਾਜ', 3, TRUE);
+
+-- CLASS 8: Social Studies (Subject 5)
+INSERT INTO chapters (subject_id, class_id, title, title_hindi, title_punjabi, chapter_number, is_active) VALUES
+(5, 10, 'How, When and Where', 'कैसे, कब और कहाँ', 'ਕਿਵੇਂ, ਕਦੋਂ ਅਤੇ ਕਿੱਥੇ', 1, TRUE),
+(5, 10, 'From Trade to Territory', 'व्यापार से क्षेत्र तक', 'ਵਪਾਰ ਤੋਂ ਖੇਤਰ ਤਕ', 2, TRUE),
+(5, 10, 'Ruling the Land', 'भूमि पर शासन करना', 'ਭੂਮੀ ਤੇ ਸ਼ਾਸਨ ਕਰਨਾ', 3, TRUE);
+
 -- ─────────────────────────────────────────
 -- NOTES (text + PDF)
 -- ─────────────────────────────────────────

@@ -10,5 +10,8 @@ import java.util.List;
 public interface ChapterRepository extends JpaRepository<Chapter, Integer> {
     List<Chapter> findBySubjectIdAndSchoolClassId(Integer subjectId, Integer classId);
     List<Chapter> findBySchoolClassId(Integer classId);
+    List<Chapter> findBySubjectId(Integer subjectId);
 }
+
+
 

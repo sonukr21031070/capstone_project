@@ -145,22 +145,30 @@ export const teacherService = {
 // FILE: src/services/adminService.js
 // ============================================================
 export const adminService = {
-  getPendingUsers:    (p)    => api.get('/admin/pending-users', { params: p }),
-  approveUser:        (id)   => api.put(`/admin/users/${id}/approve`),
-  rejectUser:         (id, r)=> api.put(`/admin/users/${id}/reject`, null, { params: { reason: r } }),
-  suspendUser:        (id)   => api.put(`/admin/users/${id}/suspend`),
-  getDashboardStats:  ()     => api.get('/admin/dashboard-stats'),
-  createAnnouncement: (data) => api.post('/admin/announcements', data),
-  getAnnouncements:   (p)    => api.get('/admin/announcements', { params: p }),
-  updateAnnouncement: (id, data) => api.put(`/admin/announcements/${id}`, data),
-  deleteAnnouncement: (id)   => api.delete(`/admin/announcements/${id}`),
-  getAllUsers:        (p)    => api.get('/admin/users', { params: p }),
-  getClassTeacherMap: ()     => api.get('/admin/class-teacher-mapping'),
-  createClassTeacherMap: (data) => api.post('/admin/class-teacher-mapping', data),
-  updateClassTeacherMap: (id, data) => api.put(`/admin/class-teacher-mapping/${id}`, data),
-  deleteClassTeacherMap: (id) => api.delete(`/admin/class-teacher-mapping/${id}`),
-  getSystemReports: () => api.get('/admin/system-reports'),
-  getContentModeration: (p) => api.get('/admin/content-moderation', { params: p })
+   getPendingUsers:    (p)    => api.get('/admin/pending-users', { params: p }),
+   approveUser:        (id)   => api.put(`/admin/users/${id}/approve`),
+   rejectUser:         (id, r)=> api.put(`/admin/users/${id}/reject`, null, { params: { reason: r } }),
+   suspendUser:        (id)   => api.put(`/admin/users/${id}/suspend`),
+   deleteUser:         (id)   => api.delete(`/admin/users/${id}`),
+   getDashboardStats:  ()     => api.get('/admin/dashboard-stats'),
+   createAnnouncement: (data) => api.post('/admin/announcements', data),
+   getAnnouncements:   (p)    => api.get('/admin/announcements', { params: p }),
+   updateAnnouncement: (id, data) => api.put(`/admin/announcements/${id}`, data),
+   deleteAnnouncement: (id)   => api.delete(`/admin/announcements/${id}`),
+   getAllUsers:        (p)    => api.get('/admin/users', { params: p }),
+   getClassTeacherMap: ()     => api.get('/admin/class-teacher-mapping'),
+   getTeachers:        ()     => api.get('/admin/teachers'),
+   createClassTeacherMap: (data) => api.post('/admin/class-teacher-mapping', data),
+   updateClassTeacherMap: (id, data) => api.put(`/admin/class-teacher-mapping/${id}`, data),
+   deleteClassTeacherMap: (id) => api.delete(`/admin/class-teacher-mapping/${id}`),
+   getClassesOverview: () => api.get('/admin/classes/overview'),
+   getStudentsByClass: (classId) => api.get(`/admin/classes/${classId}/students`),
+   getTeachersByClass: (classId) => api.get(`/admin/classes/${classId}/teachers`),
+   getAllClasses:      () => api.get('/admin/classes/all'),
+   getUnassignedStudents: () => api.get('/admin/students/unassigned'),
+   assignStudentToClass: (studentId, classId) => api.post(`/admin/students/${studentId}/assign-class/${classId}`),
+   getSystemReports: () => api.get('/admin/system-reports'),
+   getContentModeration: (p) => api.get('/admin/content-moderation', { params: p })
 }
 
 // ============================================================

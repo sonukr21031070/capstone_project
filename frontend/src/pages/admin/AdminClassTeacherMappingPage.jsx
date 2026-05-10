@@ -15,9 +15,14 @@ export default function AdminClassTeacherMappingPage() {
     academicYear: new Date().getFullYear().toString()
   });
 
-  const { data: mappingsData, isLoading } = useQuery({
+  const { data: mappingsData, isLoading, error: mappingsError } = useQuery({
     queryKey: ['class-teacher-mappings'],
     queryFn: () => adminService.getClassTeacherMap()
+  });
+
+  const { data: teachersData, error: teachersError } = useQuery({
+    queryKey: ['teachers-list'],
+    queryFn: () => adminService.getTeachers()
   });
 
   const createMutation = useMutation({
@@ -30,7 +35,11 @@ export default function AdminClassTeacherMappingPage() {
       resetForm();
       setIsModalOpen(false);
     },
-    onError: () => toast.error('Failed to save mapping')
+    onError: (error) => {
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to save mapping';
+      toast.error(errorMsg);
+      console.error('Mapping error:', error);
+    }
   });
 
   const deleteMutation = useMutation({
@@ -39,7 +48,11 @@ export default function AdminClassTeacherMappingPage() {
       toast.success('Mapping deleted');
       queryClient.invalidateQueries(['class-teacher-mappings']);
     },
-    onError: () => toast.error('Failed to delete mapping')
+    onError: (error) => {
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to delete mapping';
+      toast.error(errorMsg);
+      console.error('Delete error:', error);
+    }
   });
 
   const resetForm = () => {
@@ -58,12 +71,24 @@ export default function AdminClassTeacherMappingPage() {
       toast.error('Please fill all fields');
       return;
     }
-    createMutation.mutate(formData);
+
+    // Convert string IDs to numbers for backend
+    const submitData = {
+      classId: parseInt(formData.classId),
+      subjectId: parseInt(formData.subjectId),
+      teacherId: parseInt(formData.teacherId),
+      academicYear: formData.academicYear
+    };
+
+    console.log('Submitting mapping data:', submitData);
+    createMutation.mutate(submitData);
   };
 
   const mappings = mappingsData?.data || [];
 
-  if (isLoading) return <div className="p-6 text-center">Loading...</div>;
+  if (isLoading && mappings.length === 0) {
+    return <div className="p-6 text-center text-gray-500">Loading mappings...</div>;
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -81,9 +106,18 @@ export default function AdminClassTeacherMappingPage() {
         </button>
       </div>
 
+      {mappingsError && (
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+          <p className="font-semibold">Error loading mappings:</p>
+          <p className="text-sm">{mappingsError.message || 'Failed to load mappings'}</p>
+        </div>
+      )}
+
       {mappings.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg">
-          <p className="text-gray-500 text-lg">No mappings yet</p>
+          <p className="text-gray-500 text-lg">
+            {isLoading ? 'Loading mappings...' : 'No mappings yet. Click "New Mapping" to create one.'}
+          </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -108,7 +142,12 @@ export default function AdminClassTeacherMappingPage() {
                     <button
                       onClick={() => {
                         setEditingId(mapping.id);
-                        setFormData({...mapping});
+                        setFormData({
+                          classId: (mapping.classId || '').toString(),
+                          subjectId: (mapping.subjectId || '').toString(),
+                          teacherId: (mapping.teacherId || '').toString(),
+                          academicYear: mapping.academicYear || new Date().getFullYear().toString()
+                        });
                         setIsModalOpen(true);
                       }}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
@@ -172,14 +211,16 @@ export default function AdminClassTeacherMappingPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Teacher</label>
-                <select value={formData.teacherId} onChange={(e) => setFormData({...formData, teacherId: e.target.value})}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                  <option value="">Select Teacher</option>
-                  {/* Teachers list would come from backend */}
-                </select>
-              </div>
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-2">Teacher</label>
+                 <select value={formData.teacherId} onChange={(e) => setFormData({...formData, teacherId: e.target.value})}
+                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                   <option value="">Select Teacher</option>
+                   {teachersData?.data && teachersData.data.map(teacher => (
+                     <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
+                   ))}
+                 </select>
+               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>

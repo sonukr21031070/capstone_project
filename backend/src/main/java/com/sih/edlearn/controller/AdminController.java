@@ -74,10 +74,79 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/class-subject-teacher-mapping")
+    @GetMapping("/class-teacher-mapping")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getClassTeacherMapping() {
         List<Map<String, Object>> mappings = adminService.getClassTeacherMapping();
         return ResponseEntity.ok(ApiResponse.success(mappings));
     }
-}
 
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteUserPermanently(@PathVariable Long id) {
+        adminService.deleteUserPermanently(id);
+        return ResponseEntity.ok(ApiResponse.success("User and all associated data deleted permanently"));
+    }
+
+    @GetMapping("/teachers")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllTeachers() {
+        List<Map<String, Object>> teachers = adminService.getAllTeachers();
+        return ResponseEntity.ok(ApiResponse.success(teachers));
+    }
+
+    @PostMapping("/class-teacher-mapping")
+    public ResponseEntity<ApiResponse<String>> createClassTeacherMapping(@RequestBody Map<String, Object> request) {
+        adminService.createClassTeacherMapping(request);
+        return ResponseEntity.ok(ApiResponse.success("Mapping created successfully"));
+    }
+
+    @PutMapping("/class-teacher-mapping/{id}")
+    public ResponseEntity<ApiResponse<String>> updateClassTeacherMapping(
+            @PathVariable Integer id,
+            @RequestBody Map<String, Object> request) {
+        adminService.updateClassTeacherMapping(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Mapping updated successfully"));
+    }
+
+    @DeleteMapping("/class-teacher-mapping/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteClassTeacherMapping(@PathVariable Integer id) {
+        adminService.deleteClassTeacherMapping(id);
+        return ResponseEntity.ok(ApiResponse.success("Mapping deleted successfully"));
+    }
+
+    @GetMapping("/classes/overview")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getClassesOverview() {
+        List<Map<String, Object>> overview = adminService.getClassesOverview();
+        return ResponseEntity.ok(ApiResponse.success(overview));
+    }
+
+    @GetMapping("/classes/{classId}/students")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getStudentsByClass(@PathVariable Integer classId) {
+        List<Map<String, Object>> students = adminService.getStudentsByClass(classId);
+        return ResponseEntity.ok(ApiResponse.success(students));
+    }
+
+    @GetMapping("/classes/{classId}/teachers")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getTeachersByClass(@PathVariable Integer classId) {
+        List<Map<String, Object>> teachers = adminService.getTeachersByClass(classId);
+        return ResponseEntity.ok(ApiResponse.success(teachers));
+    }
+
+    @GetMapping("/classes/all")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllClasses() {
+        List<Map<String, Object>> classes = adminService.getAllClasses();
+        return ResponseEntity.ok(ApiResponse.success(classes));
+    }
+
+    @GetMapping("/students/unassigned")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllStudentsWithoutClass() {
+        List<Map<String, Object>> students = adminService.getAllStudentsWithoutClass();
+        return ResponseEntity.ok(ApiResponse.success(students));
+    }
+
+    @PostMapping("/students/{studentId}/assign-class/{classId}")
+    public ResponseEntity<ApiResponse<String>> assignStudentToClass(
+            @PathVariable Long studentId,
+            @PathVariable Integer classId) {
+        adminService.assignStudentToClass(studentId, classId);
+        return ResponseEntity.ok(ApiResponse.success("Student assigned to class successfully"));
+    }
+}

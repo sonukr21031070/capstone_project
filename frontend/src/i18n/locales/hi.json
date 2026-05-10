@@ -75,17 +75,21 @@
     "selectSubject": "विषय चुनें",
     "selectChapter": "अध्याय चुनें",
     "remarks": "छात्र टिप्पणियां"
-  },
-  "admin": {
-    "pendingApprovals": "लंबित अनुमोदन",
-    "approve": "अनुमोदित करें",
-    "reject": "अस्वीकार करें",
-    "allStudents": "सभी छात्र",
-    "allTeachers": "सभी शिक्षक",
-    "allParents": "सभी अभिभावक",
-    "createAnnouncement": "सूचना बनाएं",
-    "totalUsers": "कुल उपयोगकर्ता"
-  },
+   },
+    "admin": {
+      "pendingApprovals": "लंबित अनुमोदन",
+      "approve": "अनुमोदित करें",
+      "reject": "अस्वीकार करें",
+      "allStudents": "सभी छात्र",
+      "allTeachers": "सभी शिक्षक",
+      "allParents": "सभी अभिभावक",
+      "createAnnouncement": "सूचना बनाएं",
+      "totalUsers": "कुल उपयोगकर्ता",
+      "classOverview": "कक्षा अवलोकन",
+      "mappings": "कक्षा-शिक्षक मानचित्रण",
+      "assignStudents": "छात्रों को कक्षाओं में असाइन करें",
+      "reports": "सिस्टम रिपोर्टें"
+    },
   "parent": {
     "myChildren": "मेरे बच्चे",
     "childProgress": "बच्चे की प्रगति",

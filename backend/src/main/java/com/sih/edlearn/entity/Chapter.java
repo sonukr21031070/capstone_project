@@ -1,6 +1,7 @@
 package com.sih.edlearn.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Entity
@@ -36,5 +37,11 @@ public class Chapter {
 
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @Transient
+    @JsonProperty("name")
+    public String getName() {
+        return title;
+    }
 }
 

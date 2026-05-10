@@ -61,6 +61,22 @@ public class StudentService {
     }
 
     @Transactional(readOnly = true)
+    public List<Chapter> getChaptersForStudent(String username, Integer subjectId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", username));
+        Student student = studentRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student", user.getId()));
+
+        if (subjectId != null) {
+            // Get chapters for specific subject and student's class
+            return chapterRepository.findBySubjectIdAndSchoolClassId(subjectId, student.getSchoolClass().getId());
+        } else {
+            // Get all chapters for student's class
+            return chapterRepository.findBySchoolClassId(student.getSchoolClass().getId());
+        }
+    }
+
+    @Transactional(readOnly = true)
     public PagedResponse<NoteResponse> getNotes(String username, Integer subjectId, Integer chapterId, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", username));

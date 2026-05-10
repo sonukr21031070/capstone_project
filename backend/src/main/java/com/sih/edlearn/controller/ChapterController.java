@@ -27,6 +27,8 @@ public class ChapterController {
             chapters = chapterRepository.findBySubjectIdAndSchoolClassId(subjectId, classId);
         } else if (classId != null) {
             chapters = chapterRepository.findBySchoolClassId(classId);
+        } else if (subjectId != null) {
+            chapters = chapterRepository.findBySubjectId(subjectId);
         } else {
             chapters = chapterRepository.findAll();
         }

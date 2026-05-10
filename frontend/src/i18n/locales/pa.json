@@ -36,12 +36,15 @@
     "myContent": "ਮੇਰੀ ਸਮੱਗਰੀ", "publish": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ", "draft": "ਡਰਾਫਟ",
     "selectClass": "ਜਮਾਤ ਚੁਣੋ", "selectSubject": "ਵਿਸ਼ਾ ਚੁਣੋ", "selectChapter": "ਅਧਿਆਏ ਚੁਣੋ",
     "remarks": "ਵਿਦਿਆਰਥੀ ਟਿੱਪਣੀਆਂ"
-  },
-  "admin": {
-    "pendingApprovals": "ਲੰਬਿਤ ਮਨਜ਼ੂਰੀਆਂ", "approve": "ਮਨਜ਼ੂਰ ਕਰੋ", "reject": "ਰੱਦ ਕਰੋ",
-    "allStudents": "ਸਾਰੇ ਵਿਦਿਆਰਥੀ", "allTeachers": "ਸਾਰੇ ਅਧਿਆਪਕ",
-    "allParents": "ਸਾਰੇ ਮਾਪੇ", "createAnnouncement": "ਸੂਚਨਾ ਬਣਾਓ", "totalUsers": "ਕੁੱਲ ਉਪਯੋਗਕਰਤਾ"
-  },
+   },
+    "admin": {
+      "pendingApprovals": "ਲੰਬਿਤ ਮਨਜ਼ੂਰੀਆਂ", "approve": "ਮਨਜ਼ੂਰ ਕਰੋ", "reject": "ਰੱਦ ਕਰੋ",
+      "allStudents": "ਸਾਰੇ ਵਿਦਿਆਰਥੀ", "allTeachers": "ਸਾਰੇ ਅਧਿਆਪਕ",
+      "allParents": "ਸਾਰੇ ਮਾਪੇ", "createAnnouncement": "ਸੂਚਨਾ ਬਣਾਓ", "totalUsers": "ਕੁੱਲ ਉਪਯੋਗਕਰਤਾ",
+      "classOverview": "ਜਮਾਤ ਨਜ਼ਰੀਆ", "mappings": "ਜਮਾਤ-ਅਧਿਆਪਕ ਮਾਪ",
+      "assignStudents": "ਵਿਦਿਆਰਥੀਆਂ ਨੂੰ ਜਮਾਤਾਂ ਵਿੱਚ ਤਫ਼ਸੀਲ ਕਰੋ",
+      "reports": "ਸਿਸਟਮ ਰਿਪੋਰਟਾਂ"
+    },
   "parent": {
     "myChildren": "ਮੇਰੇ ਬੱਚੇ", "childProgress": "ਬੱਚੇ ਦੀ ਤਰੱਕੀ",
     "teacherRemarks": "ਅਧਿਆਪਕ ਦੀਆਂ ਟਿੱਪਣੀਆਂ", "weakSubjects": "ਕਮਜ਼ੋਰ ਵਿਸ਼ੇ", "studyTime": "ਪੜ੍ਹਾਈ ਦਾ ਸਮਾਂ"

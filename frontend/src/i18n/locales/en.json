@@ -37,13 +37,14 @@
     "myContent": "My Content", "publish": "Publish", "draft": "Draft",
     "selectClass": "Select Class", "selectSubject": "Select Subject",
     "selectChapter": "Select Chapter", "remarks": "Student Remarks"
-  },
-  "admin": {
-    "pendingApprovals": "Pending Approvals", "approve": "Approve", "reject": "Reject",
-    "allStudents": "All Students", "allTeachers": "All Teachers",
-    "allParents": "All Parents", "createAnnouncement": "Create Announcement",
-    "totalUsers": "Total Users"
-  },
+   },
+    "admin": {
+      "pendingApprovals": "Pending Approvals", "approve": "Approve", "reject": "Reject",
+      "allStudents": "All Students", "allTeachers": "All Teachers",
+      "allParents": "All Parents", "createAnnouncement": "Create Announcement",
+      "totalUsers": "Total Users", "classOverview": "Class Overview", "mappings": "Class-Teacher Mapping",
+      "assignStudents": "Assign Students to Classes", "reports": "System Reports"
+    },
   "parent": {
     "myChildren": "My Children", "childProgress": "Child's Progress",
     "childRemarks": "Teacher Remarks", "teacherRemarks": "Teacher Remarks",

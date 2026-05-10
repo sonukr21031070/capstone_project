@@ -19,6 +19,9 @@ import AdminApprovalsPage from '@/pages/admin/AdminApprovalsPage'
 import AdminAnnouncementsPage from '@/pages/admin/AdminAnnouncementsPage'
 import AdminSystemReportsPage from '@/pages/admin/AdminSystemReportsPage'
 import AdminClassTeacherMappingPage from '@/pages/admin/AdminClassTeacherMappingPage'
+import AdminUserManagementPage from '@/pages/admin/AdminUserManagementPage'
+import AdminClassOverviewPage from '@/pages/admin/AdminClassOverviewPage'
+import AdminStudentClassAssignmentPage from '@/pages/admin/AdminStudentClassAssignmentPage'
 import TeacherNotesPage from '@/pages/teacher/TeacherNotesPage'
 import TeacherQuizzesPage from '@/pages/teacher/TeacherQuizzesPage'
 import TeacherVideosPage from '@/pages/teacher/TeacherVideosPage'
@@ -110,12 +113,14 @@ export default function App() {
             </Route>
 
             <Route path="/admin" element={<ProtectedRoute allowedRoles={['ADMIN']}><DashboardLayout /></ProtectedRoute>}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="approvals" element={<AdminApprovalsPage />} />
-              <Route path="users" element={<AdminUsersPage />} />
-              <Route path="announcements" element={<AdminAnnouncementsPage />} />
-              <Route path="reports" element={<AdminSystemReportsPage />} />
-              <Route path="mappings" element={<AdminClassTeacherMappingPage />} />
+               <Route index element={<AdminDashboard />} />
+               <Route path="approvals" element={<AdminApprovalsPage />} />
+               <Route path="users" element={<AdminUserManagementPage />} />
+               <Route path="announcements" element={<AdminAnnouncementsPage />} />
+               <Route path="reports" element={<AdminSystemReportsPage />} />
+               <Route path="mappings" element={<AdminClassTeacherMappingPage />} />
+               <Route path="classes" element={<AdminClassOverviewPage />} />
+               <Route path="assign-students" element={<AdminStudentClassAssignmentPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
