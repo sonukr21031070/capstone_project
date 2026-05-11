@@ -191,7 +191,8 @@ const TEACHER_NAV = [
   { to: '/teacher/videos',    icon: Video,           key: 'nav.videos' },
   { to: '/teacher/quizzes',   icon: Brain,           key: 'nav.quizzes' },
   { to: '/teacher/exercises', icon: Dumbbell,        key: 'nav.exercises' },
-  { to: '/teacher/remarks',   icon: MessageSquare,   key: 'teacher.remarks' }
+  { to: '/teacher/remarks',   icon: MessageSquare,   key: 'teacher.remarks' },
+  { to: '/teacher/announcements', icon: Bell,        key: 'nav.announcements' }
 ]
 
 const PARENT_NAV = [

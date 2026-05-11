@@ -38,6 +38,7 @@ public class TeacherService {
     private final FileStorageService fileStorageService;
     private final StudentRepository studentRepository;
     private final ExerciseSubmissionRepository exerciseSubmissionRepository;
+    private final AnnouncementRepository announcementRepository;
 
     @Transactional
     public NoteResponse createNote(NoteRequest request, String username) {
@@ -110,20 +111,38 @@ public class TeacherService {
         return mapNoteToResponse(note);
     }
 
-    public PagedResponse<NoteResponse> getTeacherNotes(String username, int page, int size) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Teacher teacher = teacherRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+      @Transactional(readOnly = true)
+      public PagedResponse<NoteResponse> getTeacherNotes(String username, int page, int size) {
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Teacher teacher = teacherRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Note> notesPage = noteRepository.findByTeacherIdAndStatus(
-                teacher.getId(), Note.Status.DRAFT, pageable);
+         Pageable pageable = PageRequest.of(page, size);
+         Page<Note> notesPage = noteRepository.findByTeacherIdAndStatus(
+                 teacher.getId(), Note.Status.DRAFT, pageable);
 
-        return buildPagedResponse(notesPage.map(this::mapNoteToResponse), page);
-    }
+         return buildPagedResponse(notesPage.map(this::mapNoteToResponse), page);
+      }
 
-    @Transactional
+      @Transactional(readOnly = true)
+      public List<ChapterResponseDto> getChaptersForTeacher(Integer subjectId, Integer classId) {
+           List<Chapter> chapters;
+           if (subjectId != null && classId != null) {
+               chapters = chapterRepository.findBySubjectIdAndSchoolClassId(subjectId, classId);
+           } else if (subjectId != null) {
+               chapters = chapterRepository.findBySubjectId(subjectId);
+           } else if (classId != null) {
+               chapters = chapterRepository.findBySchoolClassId(classId);
+           } else {
+               chapters = new ArrayList<>();
+           }
+           return chapters.stream()
+                   .map(this::mapChapterToResponseDto)
+                   .collect(Collectors.toList());
+       }
+
+     @Transactional
     public void publishNote(Long noteId, String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
@@ -343,22 +362,30 @@ public class TeacherService {
                 .build();
     }
 
-    private QuizResponse mapQuizToResponse(Quiz quiz) {
-        return QuizResponse.builder()
-                .id(quiz.getId())
-                .title(quiz.getTitle())
-                .description(quiz.getDescription())
-                .quizType(quiz.getQuizType().name())
-                .difficulty(quiz.getDifficulty().name())
-                .totalMarks(quiz.getTotalMarks())
-                .passMarks(quiz.getPassMarks())
-                .timeLimitMins(quiz.getTimeLimitMins())
-                .isVoiceEnabled(quiz.getIsVoiceEnabled())
-                .subjectName(quiz.getSubject().getName())
-                .chapterTitle(quiz.getChapter().getTitle())
-                .createdAt(quiz.getCreatedAt())
-                .build();
-    }
+     private QuizResponse mapQuizToResponse(Quiz quiz) {
+         return QuizResponse.builder()
+                 .id(quiz.getId())
+                 .title(quiz.getTitle())
+                 .description(quiz.getDescription())
+                 .quizType(quiz.getQuizType().name())
+                 .difficulty(quiz.getDifficulty().name())
+                 .totalMarks(quiz.getTotalMarks())
+                 .passMarks(quiz.getPassMarks())
+                 .timeLimitMins(quiz.getTimeLimitMins())
+                 .isVoiceEnabled(quiz.getIsVoiceEnabled())
+                 .subjectName(quiz.getSubject().getName())
+                 .chapterTitle(quiz.getChapter().getTitle())
+                 .createdAt(quiz.getCreatedAt())
+                 .build();
+     }
+
+     private ChapterResponseDto mapChapterToResponseDto(Chapter chapter) {
+         return ChapterResponseDto.builder()
+                 .id(chapter.getId())
+                 .title(chapter.getTitle())
+                 .chapterNumber(chapter.getChapterNumber())
+                 .build();
+     }
 
     @Transactional
     public void deleteNote(Long noteId, String username) {
@@ -375,30 +402,31 @@ public class TeacherService {
         log.info("Note deleted: {}", noteId);
     }
 
-    public PagedResponse<VideoResponse> getTeacherVideos(String username, int page, int size, String status) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Teacher teacher = teacherRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Video> videosPage;
+     @Transactional(readOnly = true)
+     public PagedResponse<VideoResponse> getTeacherVideos(String username, int page, int size, String status) {
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Teacher teacher = teacherRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+         Pageable pageable = PageRequest.of(page, size);
+         Page<Video> videosPage;
 
-        if (status != null && !status.isEmpty() && !status.equals("ALL")) {
-            try {
-                Video.Status videoStatus = Video.Status.valueOf(status.toUpperCase());
-                videosPage = videoRepository.findByTeacherIdAndStatus(teacher.getId(), videoStatus, pageable);
-            } catch (IllegalArgumentException e) {
-                videosPage = videoRepository.findByTeacherIdAndStatus(teacher.getId(), Video.Status.DRAFT, pageable);
-            }
-        } else {
-            videosPage = videoRepository.findByTeacherIdAndStatus(teacher.getId(), Video.Status.DRAFT, pageable);
-            // Combine draft and published videos
-            Pageable allVideosPageable = PageRequest.of(page, size * 2);
-            videosPage = videoRepository.findByTeacherId(teacher.getId(), allVideosPageable)
-                    .map(video -> video);
-        }
-        return buildPagedResponse(videosPage.map(this::mapVideoToResponse), page);
-    }
+         if (status != null && !status.isEmpty() && !status.equals("ALL")) {
+             try {
+                 Video.Status videoStatus = Video.Status.valueOf(status.toUpperCase());
+                 videosPage = videoRepository.findByTeacherIdAndStatus(teacher.getId(), videoStatus, pageable);
+             } catch (IllegalArgumentException e) {
+                 videosPage = videoRepository.findByTeacherIdAndStatus(teacher.getId(), Video.Status.DRAFT, pageable);
+             }
+         } else {
+             videosPage = videoRepository.findByTeacherIdAndStatus(teacher.getId(), Video.Status.DRAFT, pageable);
+             // Combine draft and published videos
+             Pageable allVideosPageable = PageRequest.of(page, size * 2);
+             videosPage = videoRepository.findByTeacherId(teacher.getId(), allVideosPageable)
+                     .map(video -> video);
+         }
+         return buildPagedResponse(videosPage.map(this::mapVideoToResponse), page);
+     }
 
     @Transactional
     public void publishVideo(Long videoId, String username) {
@@ -566,6 +594,33 @@ public class TeacherService {
                 .gradedAt(submission.getGradedAt())
                 .createdAt(submission.getCreatedAt())
                 .updatedAt(submission.getUpdatedAt())
+                .build();
+    }
+
+    public PagedResponse<Object> getAnnouncements(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Announcement> announcementsPage = announcementRepository.findActiveByRole(
+                Announcement.TargetRole.TEACHER, LocalDateTime.now(), pageable);
+
+        List<Object> announcements = announcementsPage.getContent().stream()
+                .map(a -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", a.getId());
+                    map.put("title", a.getTitle());
+                    map.put("content", a.getContent());
+                    map.put("priority", a.getPriority());
+                    map.put("publishDate", a.getPublishDate());
+                    return (Object) map;
+                })
+                .collect(Collectors.toList());
+
+        return PagedResponse.builder()
+                .content(announcements)
+                .page(page)
+                .size(size)
+                .totalElements(announcementsPage.getTotalElements())
+                .totalPages(announcementsPage.getTotalPages())
+                .last(announcementsPage.isLast())
                 .build();
     }
 

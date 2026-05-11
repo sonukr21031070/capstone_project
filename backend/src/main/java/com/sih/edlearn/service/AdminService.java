@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sih.edlearn.dto.response.AnnouncementResponse;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -46,14 +47,15 @@ public class AdminService {
     private final SchoolClassRepository schoolClassRepository;
     private final SubjectRepository subjectRepository;
 
+    @Transactional(readOnly = true)
     public PagedResponse<UserSummaryResponse> getPendingUsers(int page, int size, User.Role role) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<User> usersPage = role != null
-                ? userRepository.findByRoleAndStatus(role, User.Status.PENDING, pageable)
-                : userRepository.findByStatus(User.Status.PENDING, pageable);
+         Pageable pageable = PageRequest.of(page, size);
+         Page<User> usersPage = role != null
+                 ? userRepository.findByRoleAndStatus(role, User.Status.PENDING, pageable)
+                 : userRepository.findByStatus(User.Status.PENDING, pageable);
 
-        return buildPagedResponse(usersPage.map(this::mapUserToResponse), page);
-    }
+         return buildPagedResponse(usersPage.map(this::mapUserToResponse), page);
+     }
 
     @Transactional
     public void approveUser(Long userId) {
@@ -122,22 +124,23 @@ public class AdminService {
         log.info("Announcement created by admin: {}", announcement.getTitle());
     }
 
+    @Transactional(readOnly = true)
     public PagedResponse<UserSummaryResponse> getAllUsers(int page, int size, User.Role role, User.Status status) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<User> usersPage;
+         Pageable pageable = PageRequest.of(page, size);
+         Page<User> usersPage;
 
-        if (role != null && status != null) {
-            usersPage = userRepository.findByRoleAndStatus(role, status, pageable);
-        } else if (role != null) {
-            usersPage = userRepository.findByRole(role, pageable);
-        } else if (status != null) {
-            usersPage = userRepository.findByStatus(status, pageable);
-        } else {
-            usersPage = userRepository.findAll(pageable);
-        }
+         if (role != null && status != null) {
+             usersPage = userRepository.findByRoleAndStatus(role, status, pageable);
+         } else if (role != null) {
+             usersPage = userRepository.findByRole(role, pageable);
+         } else if (status != null) {
+             usersPage = userRepository.findByStatus(status, pageable);
+         } else {
+             usersPage = userRepository.findAll(pageable);
+         }
 
-        return buildPagedResponse(usersPage.map(this::mapUserToResponse), page);
-    }
+         return buildPagedResponse(usersPage.map(this::mapUserToResponse), page);
+     }
 
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getClassTeacherMapping() {
@@ -170,24 +173,25 @@ public class AdminService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getAllTeachers() {
-        List<User> approvedTeachers = userRepository.findByRoleAndStatus(User.Role.TEACHER, User.Status.APPROVED, Pageable.unpaged()).getContent();
-        
-        return approvedTeachers.stream()
-                .map(user -> {
-                    Teacher teacher = teacherRepository.findByUserId(user.getId()).orElse(null);
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", teacher != null ? teacher.getId() : null);
-                    map.put("teacherId", teacher != null ? teacher.getId() : null);
-                    map.put("userId", user.getId());
-                    map.put("name", user.getFullName());
-                    map.put("email", user.getEmail());
-                    map.put("phone", user.getPhone());
-                    return map;
-                })
-                .filter(m -> m.get("id") != null)
-                .collect(Collectors.toList());
-    }
+         List<User> approvedTeachers = userRepository.findByRoleAndStatus(User.Role.TEACHER, User.Status.APPROVED, Pageable.unpaged()).getContent();
+         
+         return approvedTeachers.stream()
+                 .map(user -> {
+                     Teacher teacher = teacherRepository.findByUserId(user.getId()).orElse(null);
+                     Map<String, Object> map = new HashMap<>();
+                     map.put("id", teacher != null ? teacher.getId() : null);
+                     map.put("teacherId", teacher != null ? teacher.getId() : null);
+                     map.put("userId", user.getId());
+                     map.put("name", user.getFullName());
+                     map.put("email", user.getEmail());
+                     map.put("phone", user.getPhone());
+                     return map;
+                 })
+                 .filter(m -> m.get("id") != null)
+                 .collect(Collectors.toList());
+     }
 
     @Transactional
     public void createClassTeacherMapping(Map<String, Object> request) {
@@ -650,5 +654,166 @@ public class AdminService {
                 .last(page.isLast())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<AnnouncementResponse> getAnnouncements(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Announcement> announcements =
+                announcementRepository.findAll(pageable);
+
+        Page<AnnouncementResponse> responsePage =
+                announcements.map(this::mapToAnnouncementResponse);
+
+        return buildPagedResponse(responsePage, page);
+    }
+
+    private AnnouncementResponse mapToAnnouncementResponse(Announcement announcement) {
+
+        return AnnouncementResponse.builder()
+                .id(announcement.getId())
+
+                .title(announcement.getTitle())
+                .titleHindi(announcement.getTitleHindi())
+                .titlePunjabi(announcement.getTitlePunjabi())
+
+                .content(announcement.getContent())
+                .contentHindi(announcement.getContentHindi())
+                .contentPunjabi(announcement.getContentPunjabi())
+
+                .targetRole(
+                        announcement.getTargetRole() != null
+                                ? announcement.getTargetRole().name()
+                                : null
+                )
+
+                .priority(
+                        announcement.getPriority() != null
+                                ? announcement.getPriority().name()
+                                : null
+                )
+
+                .isActive(announcement.getIsActive())
+
+                .publishDate(announcement.getPublishDate())
+                .expireDate(announcement.getExpireDate())
+
+                .targetClassId(
+                        announcement.getTargetClass() != null
+                                ? announcement.getTargetClass().getId()
+                                : null
+                )
+
+                .targetClassName(
+                        announcement.getTargetClass() != null
+                                ? announcement.getTargetClass().getName()
+                                : null
+                )
+
+                .createdById(
+                        announcement.getCreatedBy() != null
+                                ? announcement.getCreatedBy().getId()
+                                : null
+                )
+
+                .createdByName(
+                        announcement.getCreatedBy() != null
+                                ? announcement.getCreatedBy().getFullName()
+                                : null
+                )
+
+                .build();
+     }
+
+     public Map<String, Object> getSystemReports() {
+         Map<String, Object> reports = new HashMap<>();
+
+         // User counts
+         long totalStudents = userRepository.countByRole(User.Role.STUDENT);
+         long totalTeachers = userRepository.countByRole(User.Role.TEACHER);
+         long totalParents = userRepository.countByRole(User.Role.PARENT);
+         long totalUsers = totalStudents + totalTeachers + totalParents;
+
+         // Content counts
+         long notesCount = noteRepository.count();
+         long videosCount = videoRepository.count();
+         long quizzesCount = quizRepository.count();
+         long exercisesCount = exerciseRepository.count();
+         long totalContent = notesCount + videosCount + quizzesCount + exercisesCount;
+
+         // Class count
+         long classCount = schoolClassRepository.count();
+
+         // Announcements count
+         long announcementCount = announcementRepository.count();
+
+         // Active users (approved users)
+         long activeUsers = userRepository.countByStatus(User.Status.APPROVED);
+
+         // Calculate average student score
+         List<Progress> allProgress = progressRepository.findAll();
+         double avgStudentScore = allProgress.isEmpty() ? 0 :
+                 allProgress.stream()
+                         .mapToDouble(p -> p.getAvgScore() != null ? p.getAvgScore().doubleValue() : 0)
+                         .average()
+                         .orElse(0);
+
+         // Get top performing subjects
+         List<Subject> allSubjects = subjectRepository.findAll();
+         List<Map<String, Object>> topSubjects = allSubjects.stream()
+                 .map(subject -> {
+                     List<Progress> subjectProgress = progressRepository.findAll().stream()
+                             .filter(p -> p.getSubject().getId().equals(subject.getId()))
+                             .collect(Collectors.toList());
+                     double subjectAvgScore = subjectProgress.isEmpty() ? 0 :
+                             subjectProgress.stream()
+                                     .mapToDouble(p -> p.getAvgScore() != null ? p.getAvgScore().doubleValue() : 0)
+                                     .average()
+                                     .orElse(0);
+                     long subjectStudentCount = subjectProgress.stream()
+                             .map(p -> p.getStudent().getId())
+                             .distinct()
+                             .count();
+
+                     Map<String, Object> subjectData = new HashMap<>();
+                     subjectData.put("name", subject.getName());
+                     subjectData.put("avgScore", Math.round(subjectAvgScore * 100) / 100.0);
+                     subjectData.put("studentCount", subjectStudentCount);
+                     return subjectData;
+                 })
+                 .sorted((a, b) -> Double.compare((Double) b.get("avgScore"), (Double) a.get("avgScore")))
+                 .limit(5)
+                 .collect(Collectors.toList());
+
+         // Calculate activity score (0-100 based on active users percentage)
+         long approvedCount = userRepository.countByStatus(User.Status.APPROVED);
+         double activityScore = totalUsers > 0 ? (approvedCount * 100.0 / totalUsers) : 0;
+
+         // Build response
+         reports.put("totalUsers", totalUsers);
+         reports.put("studentCount", totalStudents);
+         reports.put("teacherCount", totalTeachers);
+         reports.put("parentCount", totalParents);
+         reports.put("totalContent", totalContent);
+         reports.put("notesCount", notesCount);
+         reports.put("videosCount", videosCount);
+         reports.put("quizzesCount", quizzesCount);
+         reports.put("exercisesCount", exercisesCount);
+         reports.put("classCount", classCount);
+         reports.put("announcementCount", announcementCount);
+         reports.put("activeUsers", activeUsers);
+         reports.put("avgStudentScore", Math.round(avgStudentScore * 100) / 100.0);
+         reports.put("activityScore", Math.round(activityScore * 100) / 100.0);
+         reports.put("topSubjects", topSubjects);
+
+         // Trends (placeholder values - can be enhanced with historical data)
+         reports.put("userGrowth", 12);
+         reports.put("contentGrowth", 8);
+         reports.put("scoreChange", 5);
+         reports.put("activityTrend", 3);
+
+         return reports;
+     }
 }
 

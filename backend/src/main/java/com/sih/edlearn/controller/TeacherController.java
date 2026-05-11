@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +24,14 @@ import java.util.Map;
 public class TeacherController {
 
     private final TeacherService teacherService;
+
+    @GetMapping("/chapters")
+    public ResponseEntity<ApiResponse<List<ChapterResponseDto>>> getChapters(
+            @RequestParam(required = false) Integer subjectId,
+            @RequestParam(required = false) Integer classId) {
+        List<ChapterResponseDto> chapters = teacherService.getChaptersForTeacher(subjectId, classId);
+        return ResponseEntity.ok(ApiResponse.success(chapters));
+    }
 
     @PostMapping("/notes")
     public ResponseEntity<ApiResponse<NoteResponse>> createNote(@Valid @RequestBody NoteRequest request) {
@@ -168,6 +177,14 @@ public class TeacherController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Map<String, Object> dashboard = teacherService.getDashboard(username);
         return ResponseEntity.ok(ApiResponse.success(dashboard));
+    }
+
+    @GetMapping("/announcements")
+    public ResponseEntity<ApiResponse<PagedResponse<Object>>> getAnnouncements(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PagedResponse<Object> response = teacherService.getAnnouncements(page, size);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
 

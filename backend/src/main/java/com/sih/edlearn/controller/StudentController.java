@@ -3,7 +3,6 @@ package com.sih.edlearn.controller;
 import com.sih.edlearn.dto.request.QuizSubmitRequest;
 import com.sih.edlearn.dto.response.*;
 import com.sih.edlearn.entity.Subject;
-import com.sih.edlearn.entity.Chapter;
 import com.sih.edlearn.service.StudentService;
 import com.sih.edlearn.util.ApiResponse;
 import com.sih.edlearn.util.PagedResponse;
@@ -33,10 +32,10 @@ public class StudentController {
     }
 
     @GetMapping("/chapters")
-    public ResponseEntity<ApiResponse<List<Chapter>>> getChapters(
+    public ResponseEntity<ApiResponse<List<ChapterResponseDto>>> getChapters(
             @RequestParam(required = false) Integer subjectId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<Chapter> chapters = studentService.getChaptersForStudent(username, subjectId);
+        List<ChapterResponseDto> chapters = studentService.getChaptersForStudent(username, subjectId);
         return ResponseEntity.ok(ApiResponse.success(chapters));
     }
 

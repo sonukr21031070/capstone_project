@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.sih.edlearn.dto.response.AnnouncementResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,17 @@ public class AdminController {
     public ResponseEntity<ApiResponse<String>> createAnnouncement(@Valid @RequestBody AnnouncementRequest request) {
         adminService.createAnnouncement(request);
         return ResponseEntity.ok(ApiResponse.success("Announcement created successfully"));
+    }
+
+    @GetMapping("/announcements")
+    public ResponseEntity<ApiResponse<PagedResponse<AnnouncementResponse>>> getAnnouncements(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PagedResponse<AnnouncementResponse> response =
+                adminService.getAnnouncements(page, size);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/users")
@@ -148,5 +160,11 @@ public class AdminController {
             @PathVariable Integer classId) {
         adminService.assignStudentToClass(studentId, classId);
         return ResponseEntity.ok(ApiResponse.success("Student assigned to class successfully"));
+    }
+
+    @GetMapping("/system-reports")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getSystemReports() {
+        Map<String, Object> reports = adminService.getSystemReports();
+        return ResponseEntity.ok(ApiResponse.success(reports));
     }
 }

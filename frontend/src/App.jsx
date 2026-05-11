@@ -99,7 +99,8 @@ export default function App() {
                <Route path="exercises/new" element={<TeacherUploadNote />} />
                <Route path="exercises/:exerciseId/submissions" element={<TeacherGradingPage />} />
                <Route path="remarks" element={<TeacherRemarksPage />} />
-             </Route>
+               <Route path="announcements" element={<AnnouncementsPage />} />
+              </Route>
 
             <Route path="/parent" element={<ProtectedRoute allowedRoles={['PARENT']}><DashboardLayout /></ProtectedRoute>}>
               <Route index element={<ParentDashboard />} />

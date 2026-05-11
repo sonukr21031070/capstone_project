@@ -61,19 +61,23 @@ public class StudentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Chapter> getChaptersForStudent(String username, Integer subjectId) {
+    public List<ChapterResponseDto> getChaptersForStudent(String username, Integer subjectId) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
         Student student = studentRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Student", user.getId()));
 
+        List<Chapter> chapters;
         if (subjectId != null) {
             // Get chapters for specific subject and student's class
-            return chapterRepository.findBySubjectIdAndSchoolClassId(subjectId, student.getSchoolClass().getId());
+            chapters = chapterRepository.findBySubjectIdAndSchoolClassId(subjectId, student.getSchoolClass().getId());
         } else {
             // Get all chapters for student's class
-            return chapterRepository.findBySchoolClassId(student.getSchoolClass().getId());
+            chapters = chapterRepository.findBySchoolClassId(student.getSchoolClass().getId());
         }
+        return chapters.stream()
+                .map(this::mapChapterToResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -251,32 +255,33 @@ public class StudentService {
         return result;
     }
 
-    public PagedResponse<Object> getAnnouncements(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Announcement> announcementsPage = announcementRepository.findActiveByRole(
-                Announcement.TargetRole.STUDENT, LocalDateTime.now(), pageable);
+     @Transactional(readOnly = true)
+     public PagedResponse<Object> getAnnouncements(int page, int size) {
+         Pageable pageable = PageRequest.of(page, size);
+         Page<Announcement> announcementsPage = announcementRepository.findActiveByRole(
+                 Announcement.TargetRole.STUDENT, LocalDateTime.now(), pageable);
 
-        List<Object> announcements = announcementsPage.getContent().stream()
-                .map(a -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", a.getId());
-                    map.put("title", a.getTitle());
-                    map.put("content", a.getContent());
-                    map.put("priority", a.getPriority());
-                    map.put("publishDate", a.getPublishDate());
-                    return (Object) map;
-                })
-                .collect(Collectors.toList());
+         List<Object> announcements = announcementsPage.getContent().stream()
+                 .map(a -> {
+                     Map<String, Object> map = new HashMap<>();
+                     map.put("id", a.getId());
+                     map.put("title", a.getTitle());
+                     map.put("content", a.getContent());
+                     map.put("priority", a.getPriority());
+                     map.put("publishDate", a.getPublishDate());
+                     return (Object) map;
+                 })
+                 .collect(Collectors.toList());
 
-        return PagedResponse.builder()
-                .content(announcements)
-                .page(page)
-                .size(size)
-                .totalElements(announcementsPage.getTotalElements())
-                .totalPages(announcementsPage.getTotalPages())
-                .last(announcementsPage.isLast())
-                .build();
-    }
+         return PagedResponse.builder()
+                 .content(announcements)
+                 .page(page)
+                 .size(size)
+                 .totalElements(announcementsPage.getTotalElements())
+                 .totalPages(announcementsPage.getTotalPages())
+                 .last(announcementsPage.isLast())
+                 .build();
+     }
 
     @Transactional(readOnly = true)
     public Map<String, Object> getDashboard(String username) {
@@ -641,11 +646,19 @@ public class StudentService {
                                 .marks(q.getMarks())
                                 .orderIndex(q.getOrderIndex())
                                 .build())
-                        .collect(Collectors.toList()))
+                .collect(Collectors.toList()))
                 .build();
-    }
+     }
 
-    private <T> PagedResponse<T> buildPagedResponse(Page<T> page, int pageNumber) {
+     private ChapterResponseDto mapChapterToResponseDto(Chapter chapter) {
+         return ChapterResponseDto.builder()
+                 .id(chapter.getId())
+                 .title(chapter.getTitle())
+                 .chapterNumber(chapter.getChapterNumber())
+                 .build();
+     }
+
+     private <T> PagedResponse<T> buildPagedResponse(Page<T> page, int pageNumber) {
         return PagedResponse.<T>builder()
                 .content(page.getContent())
                 .page(pageNumber)

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { studentService } from '../../store/storeAndServices';
+import { studentService, teacherService, parentService, useAuthStore } from '../../store/storeAndServices';
 import { useTranslation } from 'react-i18next';
 import { TTSButton } from '../../components/ComponentLibrary';
 
@@ -9,16 +9,31 @@ export default function AnnouncementsPage() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const { i18n } = useTranslation();
+  const user = useAuthStore(s => s.user);
+
+  // Select appropriate service based on user role
+  const getService = () => {
+    switch(user?.role) {
+      case 'TEACHER':
+        return teacherService;
+      case 'PARENT':
+        return parentService;
+      case 'STUDENT':
+      default:
+        return studentService;
+    }
+  };
 
   useEffect(() => {
     loadAnnouncements();
-  }, [page]);
+  }, [page, user?.role]);
 
   const loadAnnouncements = async () => {
     try {
       setError(null);
       setLoading(true);
-      const data = await studentService.getAnnouncements({ page: page, size: 10 });
+      const service = getService();
+      const data = await service.getAnnouncements({ page: page, size: 10 });
       setAnnouncements(data?.data?.content || data?.content || []);
     } catch (error) {
       console.error('Error loading announcements:', error);

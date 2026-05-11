@@ -38,23 +38,23 @@ export function TeacherUploadNote() {
     ]})
   })
 
-  const { data: chaptersData } = useQuery({
-    queryKey: ['chapters', selectedSubject],
-    queryFn: () => fetch(`/api/chapters?subjectId=${selectedSubject}`).then(r => r.json()).catch(() => ({ data: [] })),
-    enabled: !!selectedSubject
-  })
+   const { data: chaptersData } = useQuery({
+     queryKey: ['chapters-teacher', selectedSubject, selectedClass],
+     queryFn: () => teacherService.getChapters({ subjectId: selectedSubject, classId: selectedClass }),
+     enabled: !!selectedSubject && !!selectedClass
+   })
 
-  const chapters = chaptersData?.data || []
+   const chapters = chaptersData?.data || []
 
-  // ...existing code...
+   // ...existing code...
 
-  const createMutation = useMutation({
-    mutationFn: tab === 'text' ? teacherService.createNote : teacherService.uploadPdfNote,
-    onSuccess: () => {
-      toast.success('Note saved successfully!')
-      navigate('/teacher')
-    }
-  })
+   const createMutation = useMutation({
+     mutationFn: tab === 'text' ? teacherService.createNote : teacherService.uploadPdfNote,
+     onSuccess: () => {
+       toast.success('Note saved successfully!')
+       navigate('/teacher')
+     }
+   })
 
   const onSubmit = (data) => {
     if (tab === 'text') {
@@ -214,24 +214,25 @@ export function TeacherCreateQuiz() {
     }
   })
 
-  const { fields, append, remove } = useFieldArray({ control, name: 'questions' })
-  const quizType = watch('quizType')
-  const selectedSubject = watch('subjectId')
+   const { fields, append, remove } = useFieldArray({ control, name: 'questions' })
+   const quizType = watch('quizType')
+   const selectedSubject = watch('subjectId')
+   const selectedClass = watch('classId')
 
-  const { data: chaptersData } = useQuery({
-    queryKey: ['chapters', selectedSubject],
-    queryFn: () => fetch(`/api/student/chapters?subjectId=${selectedSubject}`).then(r => r.json()),
-    enabled: !!selectedSubject
-  })
+   const { data: chaptersData } = useQuery({
+     queryKey: ['chapters-teacher', selectedSubject, selectedClass],
+     queryFn: () => teacherService.getChapters({ subjectId: selectedSubject, classId: selectedClass }),
+     enabled: !!selectedSubject && !!selectedClass
+   })
 
-  const chapters = chaptersData?.data || []
+   const chapters = chaptersData?.data || []
 
-  // ...existing code...
+   // ...existing code...
 
-  const createMutation = useMutation({
-    mutationFn: teacherService.createQuiz,
-    onSuccess: () => { toast.success('Quiz created and published!'); navigate('/teacher') }
-  })
+   const createMutation = useMutation({
+     mutationFn: teacherService.createQuiz,
+     onSuccess: () => { toast.success('Quiz created and published!'); navigate('/teacher') }
+   })
 
   const onSubmit = (data) => createMutation.mutate({ ...data, isPublished: true })
 
@@ -537,11 +538,11 @@ export function QuizListPage() {
 
   const { data: subjectsData } = useQuery({ queryKey: ['student-subjects'], queryFn: studentService.getSubjects })
 
-  const { data: chaptersData } = useQuery({
-    queryKey: ['student-chapters', selectedSubject],
-    queryFn: () => fetch(`/api/chapters?subjectId=${selectedSubject}`).then(r => r.json()).catch(() => ({ data: [] })),
-    enabled: !!selectedSubject
-  })
+   const { data: chaptersData } = useQuery({
+     queryKey: ['student-chapters', selectedSubject],
+     queryFn: () => studentService.getChapters({ subjectId: selectedSubject }),
+     enabled: !!selectedSubject
+   })
 
   const { data: quizzesData } = useQuery({
     queryKey: ['student-quizzes', selectedSubject, selectedChapter],
@@ -660,45 +661,46 @@ export function TeacherUploadVideo() {
   const navigate = useNavigate()
   const [videoFile, setVideoFile] = useState(null)
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
-    defaultValues: {}
-  })
+   const { register, handleSubmit, watch, formState: { errors } } = useForm({
+     defaultValues: {}
+   })
 
-  const selectedSubject = watch('subjectId')
+   const selectedSubject = watch('subjectId')
+   const selectedClass = watch('classId')
 
-  const { data: classesData } = useQuery({
-    queryKey: ['classes'],
-    queryFn: () => Promise.resolve({ data: [1,2,3,4,5,6,7,8].map(i => ({ id: i, name: `Class ${i}` })) })
-  })
+   const { data: classesData } = useQuery({
+     queryKey: ['classes'],
+     queryFn: () => Promise.resolve({ data: [1,2,3,4,5,6,7,8].map(i => ({ id: i, name: `Class ${i}` })) })
+   })
 
-  const { data: subjectsData } = useQuery({
-    queryKey: ['subjects'],
-    queryFn: () => Promise.resolve({ data: [
-      { id: 1, name: 'Mathematics' },
-      { id: 2, name: 'Hindi' },
-      { id: 3, name: 'English' },
-      { id: 4, name: 'Science' },
-      { id: 5, name: 'Social Studies' }
-    ]})
-  })
+   const { data: subjectsData } = useQuery({
+     queryKey: ['subjects'],
+     queryFn: () => Promise.resolve({ data: [
+       { id: 1, name: 'Mathematics' },
+       { id: 2, name: 'Hindi' },
+       { id: 3, name: 'English' },
+       { id: 4, name: 'Science' },
+       { id: 5, name: 'Social Studies' }
+     ]})
+   })
 
-  const { data: chaptersData } = useQuery({
-    queryKey: ['chapters', selectedSubject],
-    queryFn: () => fetch(`/api/chapters?subjectId=${selectedSubject}`).then(r => r.json()).catch(() => ({ data: [] })),
-    enabled: !!selectedSubject
-  })
+    const { data: chaptersData } = useQuery({
+      queryKey: ['chapters-teacher', selectedSubject, selectedClass],
+      queryFn: () => teacherService.getChapters({ subjectId: selectedSubject, classId: selectedClass }),
+      enabled: !!selectedSubject && !!selectedClass
+    })
 
-  const chapters = chaptersData?.data || []
+   const chapters = chaptersData?.data || []
 
-  // ...existing code...
+   // ...existing code...
 
-  const createMutation = useMutation({
-    mutationFn: teacherService.uploadVideo,
-    onSuccess: () => {
-      toast.success('Video uploaded successfully!')
-      navigate('/teacher/videos')
-    }
-  })
+   const createMutation = useMutation({
+     mutationFn: teacherService.uploadVideo,
+     onSuccess: () => {
+       toast.success('Video uploaded successfully!')
+       navigate('/teacher/videos')
+     }
+   })
 
   const onSubmit = (data) => {
     if (!videoFile) {

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,95 +29,99 @@ public class ParentService {
     private final AnnouncementRepository announcementRepository;
     private final ProgressRepository progressRepository;
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getChildren(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Parent parent = parentRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Parent", user.getId()));
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Parent parent = parentRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Parent", user.getId()));
 
-        return parentStudentMappingRepository.findByParentId(parent.getId()).stream()
-                .map(m -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("studentId", m.getStudent().getId());
-                    map.put("studentName", m.getStudent().getUser().getFullName());
-                    map.put("className", m.getStudent().getSchoolClass().getName());
-                    map.put("rollNumber", m.getStudent().getRollNumber());
-                    return map;
-                })
-                .collect(Collectors.toList());
-    }
+         return parentStudentMappingRepository.findByParentId(parent.getId()).stream()
+                 .map(m -> {
+                     Map<String, Object> map = new HashMap<>();
+                     map.put("studentId", m.getStudent().getId());
+                     map.put("studentName", m.getStudent().getUser().getFullName());
+                     map.put("className", m.getStudent().getSchoolClass().getName());
+                     map.put("rollNumber", m.getStudent().getRollNumber());
+                     return map;
+                 })
+                 .collect(Collectors.toList());
+     }
 
+    @Transactional(readOnly = true)
     public List<ProgressResponse> getChildProgress(String username, Long studentId) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Parent parent = parentRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Parent", user.getId()));
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Parent parent = parentRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Parent", user.getId()));
 
-        // Verify parent owns this student
-        if (!parentStudentMappingRepository.existsByParentIdAndStudentId(parent.getId(), studentId)) {
-            throw new ResourceNotFoundException("You don't have permission to view this student's progress");
-        }
+         // Verify parent owns this student
+         if (!parentStudentMappingRepository.existsByParentIdAndStudentId(parent.getId(), studentId)) {
+             throw new ResourceNotFoundException("You don't have permission to view this student's progress");
+         }
 
-        return progressRepository.findByStudentId(studentId).stream()
-                .map(p -> ProgressResponse.builder()
-                        .id(p.getId())
-                        .subjectName(p.getSubject().getName())
-                        .chapterTitle(p.getChapter().getTitle())
-                        .notesRead(p.getNotesRead())
-                        .videosWatched(p.getVideosWatched())
-                        .quizzesTaken(p.getQuizzesTaken())
-                        .avgScore(p.getAvgScore())
-                        .timeSpentMins(p.getTimeSpentMins())
-                        .isChapterComplete(p.getIsChapterComplete())
-                        .build())
-                .collect(Collectors.toList());
-    }
+         return progressRepository.findByStudentId(studentId).stream()
+                 .map(p -> ProgressResponse.builder()
+                         .id(p.getId())
+                         .subjectName(p.getSubject().getName())
+                         .chapterTitle(p.getChapter().getTitle())
+                         .notesRead(p.getNotesRead())
+                         .videosWatched(p.getVideosWatched())
+                         .quizzesTaken(p.getQuizzesTaken())
+                         .avgScore(p.getAvgScore())
+                         .timeSpentMins(p.getTimeSpentMins())
+                         .isChapterComplete(p.getIsChapterComplete())
+                         .build())
+                 .collect(Collectors.toList());
+     }
 
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getChildRemarks(String username, Long studentId) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Parent parent = parentRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Parent", user.getId()));
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Parent parent = parentRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Parent", user.getId()));
 
-        // Verify parent owns this student
-        if (!parentStudentMappingRepository.existsByParentIdAndStudentId(parent.getId(), studentId)) {
-            throw new ResourceNotFoundException("You don't have permission to view this student's remarks");
-        }
+         // Verify parent owns this student
+         if (!parentStudentMappingRepository.existsByParentIdAndStudentId(parent.getId(), studentId)) {
+             throw new ResourceNotFoundException("You don't have permission to view this student's remarks");
+         }
 
-        return teacherRemarkRepository.findByStudentIdOrderByCreatedAtDesc(studentId).stream()
-                .map(r -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", r.getId());
-                    map.put("teacherName", r.getTeacher().getUser().getFullName());
-                    map.put("remarkText", r.getRemarkText());
-                    map.put("remarkType", r.getRemarkType().name());
-                    map.put("createdAt", r.getCreatedAt());
-                    return map;
-                })
-                .collect(Collectors.toList());
-    }
+         return teacherRemarkRepository.findByStudentIdOrderByCreatedAtDesc(studentId).stream()
+                 .map(r -> {
+                     Map<String, Object> map = new HashMap<>();
+                     map.put("id", r.getId());
+                     map.put("teacherName", r.getTeacher().getUser().getFullName());
+                     map.put("remarkText", r.getRemarkText());
+                     map.put("remarkType", r.getRemarkType().name());
+                     map.put("createdAt", r.getCreatedAt());
+                     return map;
+                 })
+                 .collect(Collectors.toList());
+     }
 
+    @Transactional(readOnly = true)
     public PagedResponse<Object> getAnnouncements(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Announcement> announcementsPage = announcementRepository.findActiveByRole(
-                Announcement.TargetRole.PARENT, LocalDateTime.now(), pageable);
+         Pageable pageable = PageRequest.of(page, size);
+         Page<Announcement> announcementsPage = announcementRepository.findActiveByRole(
+                 Announcement.TargetRole.PARENT, LocalDateTime.now(), pageable);
 
-        List<Object> announcements = announcementsPage.getContent().stream()
-                .map(a -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", a.getId());
-                    map.put("title", a.getTitle());
-                    map.put("content", a.getContent());
-                    map.put("priority", a.getPriority());
-                    map.put("publishDate", a.getPublishDate());
-                    return (Object) map;
-                })
-                .collect(Collectors.toList());
+         List<Object> announcements = announcementsPage.getContent().stream()
+                 .map(a -> {
+                     Map<String, Object> map = new HashMap<>();
+                     map.put("id", a.getId());
+                     map.put("title", a.getTitle());
+                     map.put("content", a.getContent());
+                     map.put("priority", a.getPriority());
+                     map.put("publishDate", a.getPublishDate());
+                     return (Object) map;
+                 })
+                 .collect(Collectors.toList());
 
-        return PagedResponse.builder()
-                .content(announcements)
-                .page(page)
-                .size(size)
+         return PagedResponse.builder()
+                 .content(announcements)
+                 .page(page)
+                 .size(size)
                 .totalElements(announcementsPage.getTotalElements())
                 .totalPages(announcementsPage.getTotalPages())
                 .last(announcementsPage.isLast())
