@@ -162,11 +162,11 @@ export function NotesPage() {
     queryFn: () => studentService.getSubjects()
   })
 
-  const { data: chaptersData } = useQuery({
-    queryKey: ['student-chapters', selectedSubject],
-    queryFn: () => fetch(`/api/student/chapters?subjectId=${selectedSubject}`).then(r => r.json()),
-    enabled: !!selectedSubject
-  })
+   const { data: chaptersData } = useQuery({
+     queryKey: ['student-chapters', selectedSubject],
+     queryFn: () => studentService.getChapters({ subjectId: selectedSubject }),
+     enabled: !!selectedSubject
+   })
 
   const { data: notesData, isLoading } = useQuery({
     queryKey: ['student-notes', selectedSubject, selectedChapter, page],
@@ -351,7 +351,7 @@ export function TeacherDashboard() {
       </div>
 
       {/* Recent content */}
-      {d?.recentNotes?.length > 0 && (
+      {d?.recentNotes && d.recentNotes.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
           <h2 className="font-semibold text-gray-900 mb-4">Recent Notes</h2>
           <ul className="divide-y divide-gray-100">

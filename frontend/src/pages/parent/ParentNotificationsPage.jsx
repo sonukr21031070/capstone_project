@@ -11,9 +11,10 @@ export default function ParentNotificationsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const queryClient = useQueryClient()
 
-  const { data: announcementsData, isLoading } = useQuery({
+  const { data: announcementsData, isLoading, isError } = useQuery({
     queryKey: ['parent-announcements'],
-    queryFn: () => parentService.getAnnouncements({ page: 0, size: 50 })
+    queryFn: () => parentService.getAnnouncements({ page: 0, size: 50 }),
+    retry: 1
   })
 
   // Mock delete mutation (implement on backend)
@@ -37,19 +38,23 @@ export default function ParentNotificationsPage() {
     }
   })
 
-  const announcements = announcementsData?.data || []
+  const announcements = Array.isArray(announcementsData?.data?.content)
+    ? announcementsData.data.content
+    : Array.isArray(announcementsData?.data)
+      ? announcementsData.data
+      : []
 
-  const filteredNotifications = announcements.filter(notif => {
-    const matchesFilter = filter === 'all' ||
-      (filter === 'unread' && !notif.isRead) ||
-      (filter === 'announcements' && notif.type === 'ANNOUNCEMENT')
+  const filteredNotifications = Array.isArray(announcements) ? announcements.filter(notif => {
+     const matchesFilter = filter === 'all' ||
+       (filter === 'unread' && !notif.isRead) ||
+       (filter === 'announcements' && notif.type === 'ANNOUNCEMENT')
 
-    const matchesSearch = !searchTerm ||
-      notif.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      notif.content?.toLowerCase().includes(searchTerm.toLowerCase())
+     const matchesSearch = !searchTerm ||
+       notif.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       notif.content?.toLowerCase().includes(searchTerm.toLowerCase())
 
-    return matchesFilter && matchesSearch
-  })
+     return matchesFilter && matchesSearch
+   }) : []
 
   const getPriorityColor = (priority) => {
     switch (priority) {

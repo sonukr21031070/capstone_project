@@ -15,6 +15,7 @@ import ProgressPage from '@/pages/student/ProgressPage'
 import VideosPage from '@/pages/student/VideosPage'
 import StudentExercisesPage from '@/pages/student/StudentExercisesPage'
 import StudentExerciseSubmissionPage from '@/pages/student/StudentExerciseSubmissionPage'
+import StudentSubjectsPage from '@/pages/student/StudentSubjectsPage'
 import AdminApprovalsPage from '@/pages/admin/AdminApprovalsPage'
 import AdminAnnouncementsPage from '@/pages/admin/AdminAnnouncementsPage'
 import AdminSystemReportsPage from '@/pages/admin/AdminSystemReportsPage'
@@ -77,6 +78,7 @@ export default function App() {
 
             <Route path="/student" element={<ProtectedRoute allowedRoles={['STUDENT']}><DashboardLayout /></ProtectedRoute>}>
               <Route index element={<StudentDashboard />} />
+              <Route path="subjects" element={<StudentSubjectsPage />} />
               <Route path="notes" element={<NotesPage />} />
               <Route path="quizzes" element={<QuizListPage />} />
               <Route path="progress" element={<ProgressPage />} />

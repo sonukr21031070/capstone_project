@@ -47,7 +47,7 @@ public class StudentService {
     private final TeacherRepository teacherRepository;
 
     @Transactional(readOnly = true)
-    public List<Subject> getSubjectsForStudent(String username) {
+    public List<SubjectResponseDto> getSubjectsForStudent(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
         Student student = studentRepository.findByUserId(user.getId())
@@ -57,6 +57,10 @@ public class StudentService {
         return chapterRepository.findBySchoolClassId(student.getSchoolClass().getId()).stream()
                 .map(Chapter::getSubject)
                 .distinct()
+                .map(subject -> SubjectResponseDto.builder()
+                        .id(subject.getId())
+                        .name(subject.getName())
+                        .build())
                 .collect(Collectors.toList());
     }
 

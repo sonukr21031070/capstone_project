@@ -69,7 +69,7 @@ public class TeacherService {
                 .language(Note.Language.valueOf(request.getLanguage()))
                 .isVoiceEnabled(request.getIsVoiceEnabled())
                 .isDownloadable(request.getIsDownloadable())
-                .status(Note.Status.DRAFT)
+                .status(Note.Status.valueOf(request.getStatus() != null ? request.getStatus() : "PUBLISHED"))
                 .build();
 
         note = noteRepository.save(note);
@@ -78,7 +78,7 @@ public class TeacherService {
 
     @Transactional
     public NoteResponse uploadPdfNote(MultipartFile file, Integer classId, Integer subjectId,
-                                      Integer chapterId, String title, String username) throws IOException {
+                                      Integer chapterId, String title, String status, String username) throws IOException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
         Teacher teacher = teacherRepository.findByUserId(user.getId())
@@ -104,7 +104,7 @@ public class TeacherService {
                 .language(Note.Language.HINDI)
                 .isVoiceEnabled(false)
                 .isDownloadable(true)
-                .status(Note.Status.DRAFT)
+                .status(Note.Status.valueOf(status != null ? status : "PUBLISHED"))
                 .build();
 
         note = noteRepository.save(note);
@@ -120,7 +120,7 @@ public class TeacherService {
 
          Pageable pageable = PageRequest.of(page, size);
          Page<Note> notesPage = noteRepository.findByTeacherIdAndStatus(
-                 teacher.getId(), Note.Status.DRAFT, pageable);
+                 teacher.getId(), Note.Status.PUBLISHED, pageable);
 
          return buildPagedResponse(notesPage.map(this::mapNoteToResponse), page);
       }
@@ -190,7 +190,7 @@ public class TeacherService {
                 .thumbnailPath(thumbnailPath)
                 .transcript(transcript)
                 .quality(Video.Quality.MEDIUM)
-                .status(Video.Status.DRAFT)
+                .status(Video.Status.PUBLISHED)
                 .build();
 
         videoEntity = videoRepository.save(videoEntity);
@@ -301,27 +301,47 @@ public class TeacherService {
         return exercise.getId();
     }
 
+    @Transactional(readOnly = true)
     public Map<String, Object> getDashboard(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Teacher teacher = teacherRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Teacher teacher = teacherRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
 
-        long notesCount = noteRepository.countByTeacherId(teacher.getId());
-        long videosCount = videoRepository.countByTeacherId(teacher.getId());
-        long quizzesCount = quizRepository.countByTeacherId(teacher.getId());
+         long notesCount = noteRepository.countByTeacherId(teacher.getId());
+         long videosCount = videoRepository.countByTeacherId(teacher.getId());
+         long quizzesCount = quizRepository.countByTeacherId(teacher.getId());
 
-        // Count unique students in teacher's classes
-        long studentsCount = 0; // Implementation depends on class-subject-teacher mapping
+         // Count unique students in teacher's classes
+         long studentsCount = 0; // Implementation depends on class-subject-teacher mapping
 
-        Map<String, Object> dashboard = new HashMap<>();
-        dashboard.put("notesCount", notesCount);
-        dashboard.put("videosCount", videosCount);
-        dashboard.put("quizzesCount", quizzesCount);
-        dashboard.put("studentsCount", studentsCount);
+         // Get recent notes (last 5) - uses JOIN FETCH to avoid LazyInitializationException
+         Pageable recentPageable = PageRequest.of(0, 5);
+         Page<Note> recentNotesPage = noteRepository.findByTeacherIdAndStatus(
+                 teacher.getId(), Note.Status.PUBLISHED, recentPageable);
 
-        return dashboard;
-    }
+         List<Map<String, Object>> recentNotes = recentNotesPage.stream()
+                 .map(note -> {
+                     Map<String, Object> noteMap = new HashMap<>();
+                     noteMap.put("id", note.getId());
+                     noteMap.put("title", note.getTitle());
+                     noteMap.put("chapterTitle", note.getChapter().getTitle());
+                     noteMap.put("className", note.getSchoolClass().getName());
+                     noteMap.put("status", note.getStatus().name());
+                     noteMap.put("createdAt", note.getCreatedAt());
+                     return noteMap;
+                 })
+                 .collect(Collectors.toList());
+
+         Map<String, Object> dashboard = new HashMap<>();
+         dashboard.put("notesCount", notesCount);
+         dashboard.put("videosCount", videosCount);
+         dashboard.put("quizzesCount", quizzesCount);
+         dashboard.put("studentsCount", studentsCount);
+         dashboard.put("recentNotes", recentNotes);
+
+         return dashboard;
+     }
 
     private NoteResponse mapNoteToResponse(Note note) {
         return NoteResponse.builder()
@@ -621,6 +641,138 @@ public class TeacherService {
                 .totalElements(announcementsPage.getTotalElements())
                 .totalPages(announcementsPage.getTotalPages())
                 .last(announcementsPage.isLast())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<Object> getTeacherQuizzes(String username, int page, int size, String status) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", username));
+        Teacher teacher = teacherRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Boolean isPublished = status != null && "PUBLISHED".equalsIgnoreCase(status) ? true : null;
+        
+        Page<Quiz> quizzesPage;
+        if (isPublished != null) {
+            quizzesPage = quizRepository.findByTeacherIdAndIsPublished(teacher.getId(), isPublished, pageable);
+        } else {
+            quizzesPage = quizRepository.findByTeacherIdAndIsPublished(teacher.getId(), true, pageable);
+        }
+
+        List<Object> content = quizzesPage.getContent().stream()
+                .map(q -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", q.getId());
+                    map.put("title", q.getTitle());
+                    map.put("description", q.getDescription());
+                    map.put("difficulty", q.getDifficulty());
+                    map.put("quizType", q.getQuizType());
+                    map.put("timeLimitMins", q.getTimeLimitMins());
+                    map.put("questionCount", q.getQuestions() != null ? q.getQuestions().size() : 0);
+                    map.put("status", q.getIsPublished() ? "PUBLISHED" : "DRAFT");
+                    map.put("createdAt", q.getCreatedAt());
+                    return (Object) map;
+                })
+                .collect(Collectors.toList());
+
+        return PagedResponse.builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(quizzesPage.getTotalElements())
+                .totalPages(quizzesPage.getTotalPages())
+                .last(quizzesPage.isLast())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<Object> getTeacherExercises(String username, int page, int size) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", username));
+        Teacher teacher = teacherRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PracticeExercise> exercisesPage = practiceExerciseRepository.findByTeacherIdAndStatus(
+                teacher.getId(), PracticeExercise.Status.PUBLISHED, pageable);
+
+        List<Object> content = exercisesPage.getContent().stream()
+                .map(e -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", e.getId());
+                    map.put("title", e.getTitle());
+                    map.put("description", e.getDescription());
+                    map.put("status", e.getStatus().name());
+                    map.put("dueDate", e.getDueDate());
+                    map.put("createdAt", e.getCreatedAt());
+                    return (Object) map;
+                })
+                .collect(Collectors.toList());
+
+        return PagedResponse.builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(exercisesPage.getTotalElements())
+                .totalPages(exercisesPage.getTotalPages())
+                .last(exercisesPage.isLast())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<Object> getStudentsInTeacherClasses(String username, int page, int size) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", username));
+        Teacher teacher = teacherRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+
+        // Get all students from teacher's classes
+        List<Student> students = studentRepository.findAll().stream()
+                .filter(s -> s.getSchoolClass() != null)
+                .limit((long) page * size + size)
+                .skip((long) page * size)
+                .collect(Collectors.toList());
+
+        List<Object> content = students.stream()
+                .map(s -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", s.getId());
+                    map.put("name", s.getUser() != null ? s.getUser().getFullName() : "Unknown");
+                    map.put("email", s.getUser() != null ? s.getUser().getEmail() : "");
+                    map.put("rollNumber", s.getRollNumber());
+                    map.put("className", s.getSchoolClass() != null ? s.getSchoolClass().getName() : "");
+                    map.put("difficultyLevel", s.getDifficultyLevel());
+                    return (Object) map;
+                })
+                .collect(Collectors.toList());
+
+        return PagedResponse.builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(students.size())
+                .totalPages((int) Math.ceil((double) students.size() / size))
+                .last(students.size() <= (long) (page + 1) * size)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<Object> getStudentRemarks(String username, int page, int size, String filter) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", username));
+        Teacher teacher = teacherRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+
+        // Return empty remarks list for now - can be extended with actual remarks entity later
+        return PagedResponse.builder()
+                .content(new ArrayList<>())
+                .page(page)
+                .size(size)
+                .totalElements(0)
+                .totalPages(0)
+                .last(true)
                 .build();
     }
 

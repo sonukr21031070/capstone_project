@@ -53,7 +53,7 @@ public class SecurityConfig {
                 // Role-specific endpoints
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/teacher/**").hasAnyRole("TEACHER", "ADMIN")
-                .requestMatchers("/student/**").hasAnyRole("STUDENT", "ADMIN")
+                .requestMatchers("/student/**").hasAnyRole("STUDENT", "PARENT", "ADMIN")
                 .requestMatchers("/parent/**").hasAnyRole("PARENT", "ADMIN")
                 // Shared content endpoints (authenticated)
                 .anyRequest().authenticated()

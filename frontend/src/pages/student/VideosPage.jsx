@@ -49,8 +49,12 @@ export default function VideosPage() {
 
   const loadChapters = async () => {
     try {
-      const chaptersData = await fetch(`/api/student/chapters?subjectId=${selectedSubject}`).then(r => r.json());
-      setChapters(chaptersData?.data || []);
+      if (!selectedSubject) {
+        setChapters([]);
+        return;
+      }
+      const chaptersData = await studentService.getChapters({ subjectId: selectedSubject });
+      setChapters((chaptersData?.data?.content) || chaptersData?.data || []);
     } catch (error) {
       console.error('Error loading chapters:', error);
       setChapters([]);

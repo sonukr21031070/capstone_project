@@ -46,9 +46,10 @@ public class TeacherController {
             @RequestParam Integer classId,
             @RequestParam Integer subjectId,
             @RequestParam Integer chapterId,
-            @RequestParam String title) throws IOException {
+            @RequestParam String title,
+            @RequestParam(required = false, defaultValue = "PUBLISHED") String status) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NoteResponse response = teacherService.uploadPdfNote(file, classId, subjectId, chapterId, title, username);
+        NoteResponse response = teacherService.uploadPdfNote(file, classId, subjectId, chapterId, title, status, username);
         return ResponseEntity.ok(ApiResponse.success("PDF note uploaded successfully", response));
     }
 
@@ -127,6 +128,16 @@ public class TeacherController {
         return ResponseEntity.ok(ApiResponse.success("Quiz published successfully"));
     }
 
+    @GetMapping("/quizzes")
+    public ResponseEntity<ApiResponse<PagedResponse<Object>>> getMyQuizzes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false) String status) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        PagedResponse<Object> response = teacherService.getTeacherQuizzes(username, page, size, status);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @PostMapping("/exercises")
     public ResponseEntity<ApiResponse<Long>> createExercise(@Valid @RequestBody ExerciseRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -184,6 +195,34 @@ public class TeacherController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         PagedResponse<Object> response = teacherService.getAnnouncements(page, size);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/exercises")
+    public ResponseEntity<ApiResponse<PagedResponse<Object>>> getMyExercises(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        PagedResponse<Object> response = teacherService.getTeacherExercises(username, page, size);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/students")
+    public ResponseEntity<ApiResponse<PagedResponse<Object>>> getStudents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        PagedResponse<Object> response = teacherService.getStudentsInTeacherClasses(username, page, size);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/remarks")
+    public ResponseEntity<ApiResponse<PagedResponse<Object>>> getStudentRemarks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "ALL") String filter) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        PagedResponse<Object> response = teacherService.getStudentRemarks(username, page, size, filter);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

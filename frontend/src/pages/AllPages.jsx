@@ -12,6 +12,7 @@ import toast from 'react-hot-toast'
 export function TeacherUploadNote() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [tab, setTab] = useState('text') // 'text' | 'pdf'
   const [pdfFile, setPdfFile] = useState(null)
   const [voiceContent, setVoiceContent] = useState('')
@@ -52,24 +53,30 @@ export function TeacherUploadNote() {
      mutationFn: tab === 'text' ? teacherService.createNote : teacherService.uploadPdfNote,
      onSuccess: () => {
        toast.success('Note saved successfully!')
-       navigate('/teacher')
+       queryClient.invalidateQueries(['teacher-notes-list'])
+       queryClient.invalidateQueries(['teacher-dashboard'])
+       navigate('/teacher/notes')
+     },
+     onError: (error) => {
+       toast.error(error.response?.data?.error || 'Failed to save note')
      }
    })
 
-  const onSubmit = (data) => {
-    if (tab === 'text') {
-      createMutation.mutate({ ...data, status: 'PUBLISHED' })
-    } else {
-      if (!pdfFile) { toast.error('Please select a PDF file'); return }
-      const form = new FormData()
-      form.append('file', pdfFile)
-      form.append('classId', data.classId)
-      form.append('subjectId', data.subjectId)
-      form.append('chapterId', data.chapterId)
-      form.append('title', data.title)
-      createMutation.mutate(form)
-    }
-  }
+   const onSubmit = (data) => {
+     if (tab === 'text') {
+       createMutation.mutate({ ...data, status: 'PUBLISHED' })
+     } else {
+       if (!pdfFile) { toast.error('Please select a PDF file'); return }
+       const form = new FormData()
+       form.append('file', pdfFile)
+       form.append('classId', data.classId)
+       form.append('subjectId', data.subjectId)
+       form.append('chapterId', data.chapterId)
+       form.append('title', data.title)
+       form.append('status', 'PUBLISHED')
+       createMutation.mutate(form)
+     }
+   }
 
   const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
   const labelClass = "block text-sm font-medium text-gray-700 mb-1.5"

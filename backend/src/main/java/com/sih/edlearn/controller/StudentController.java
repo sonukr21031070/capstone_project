@@ -2,7 +2,6 @@ package com.sih.edlearn.controller;
 
 import com.sih.edlearn.dto.request.QuizSubmitRequest;
 import com.sih.edlearn.dto.response.*;
-import com.sih.edlearn.entity.Subject;
 import com.sih.edlearn.service.StudentService;
 import com.sih.edlearn.util.ApiResponse;
 import com.sih.edlearn.util.PagedResponse;
@@ -19,15 +18,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/student")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
+@PreAuthorize("hasAnyRole('STUDENT', 'PARENT', 'ADMIN')")
 public class StudentController {
 
     private final StudentService studentService;
 
     @GetMapping("/subjects")
-    public ResponseEntity<ApiResponse<List<Subject>>> getSubjects() {
+    public ResponseEntity<ApiResponse<List<SubjectResponseDto>>> getSubjects() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<Subject> subjects = studentService.getSubjectsForStudent(username);
+        List<SubjectResponseDto> subjects = studentService.getSubjectsForStudent(username);
         return ResponseEntity.ok(ApiResponse.success(subjects));
     }
 
