@@ -51,8 +51,19 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
            "ORDER BY v.createdAt DESC")
     Page<Video> findByChapterIdAndStatus(Integer chapterId, Video.Status status, Pageable pageable);
 
-    @Query("SELECT COUNT(v) FROM Video v WHERE v.teacher.id = :teacherId")
-    long countByTeacherId(Long teacherId);
+     @Query("SELECT COUNT(v) FROM Video v WHERE v.teacher.id = :teacherId")
+     long countByTeacherId(Long teacherId);
+
+     @Query("SELECT DISTINCT v FROM Video v " +
+            "LEFT JOIN FETCH v.teacher t " +
+            "LEFT JOIN FETCH t.user " +
+            "LEFT JOIN FETCH v.chapter " +
+            "LEFT JOIN FETCH v.subject " +
+            "LEFT JOIN FETCH v.schoolClass " +
+            "WHERE v.schoolClass.id = :classId AND v.subject.id = :subjectId AND v.chapter.id = :chapterId AND v.status = :status " +
+            "ORDER BY v.createdAt DESC")
+     Page<Video> findBySchoolClassIdAndSubjectIdAndChapterIdAndStatus(
+             Integer classId, Integer subjectId, Integer chapterId, Video.Status status, Pageable pageable);
 }
 
 

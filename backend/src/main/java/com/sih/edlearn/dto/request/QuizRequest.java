@@ -39,7 +39,7 @@ public class QuizRequest {
     private Integer timeLimitMins = 30;
 
     private Boolean isVoiceEnabled = true;
-    private Boolean isPublished = false;
+    private Boolean isPublished = true;
 
     @NotEmpty(message = "At least one question is required")
     @Valid

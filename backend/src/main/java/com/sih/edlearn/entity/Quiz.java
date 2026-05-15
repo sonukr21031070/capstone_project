@@ -56,7 +56,7 @@ public class Quiz {
     private Boolean isVoiceEnabled = true;
 
     @Column(name = "is_published")
-    private Boolean isPublished = false;
+    private Boolean isPublished = true;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

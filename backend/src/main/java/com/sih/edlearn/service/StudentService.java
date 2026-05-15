@@ -84,33 +84,62 @@ public class StudentService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public PagedResponse<NoteResponse> getNotes(String username, Integer subjectId, Integer chapterId, int page, int size) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Student student = studentRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Student", user.getId()));
+     @Transactional(readOnly = true)
+     public PagedResponse<NoteResponse> getNotes(String username, Integer subjectId, Integer chapterId, int page, int size) {
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Student student = studentRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Student", user.getId()));
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Note> notesPage = noteRepository.findBySchoolClassIdAndSubjectIdAndStatus(
-                student.getSchoolClass().getId(), subjectId, Note.Status.PUBLISHED, pageable);
+         Pageable pageable = PageRequest.of(page, size);
+         Page<Note> notesPage;
 
-        return buildPagedResponse(notesPage.map(this::mapNoteToResponse), page);
-    }
+         // Filter by chapter if provided
+         if (chapterId != null) {
+             notesPage = noteRepository.findBySchoolClassIdAndSubjectIdAndChapterIdAndStatus(
+                     student.getSchoolClass().getId(), subjectId, chapterId, Note.Status.PUBLISHED, pageable);
+         }
+         // Filter by subject only
+         else if (subjectId != null) {
+             notesPage = noteRepository.findBySchoolClassIdAndSubjectIdAndStatus(
+                     student.getSchoolClass().getId(), subjectId, Note.Status.PUBLISHED, pageable);
+         }
+         // No filters, get all published notes for the class
+         else {
+             notesPage = noteRepository.findBySchoolClassIdAndStatus(
+                     student.getSchoolClass().getId(), Note.Status.PUBLISHED, pageable);
+         }
 
-    @Transactional(readOnly = true)
-    public PagedResponse<VideoResponse> getVideos(String username, Integer subjectId, Integer chapterId, int page, int size) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Student student = studentRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Student", user.getId()));
+         return buildPagedResponse(notesPage.map(this::mapNoteToResponse), page);
+     }
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Video> videosPage = videoRepository.findBySchoolClassIdAndSubjectIdAndStatus(
-                student.getSchoolClass().getId(), subjectId, Video.Status.PUBLISHED, pageable);
+     @Transactional(readOnly = true)
+     public PagedResponse<VideoResponse> getVideos(String username, Integer subjectId, Integer chapterId, int page, int size) {
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Student student = studentRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Student", user.getId()));
 
-        return buildPagedResponse(videosPage.map(this::mapVideoToResponse), page);
-    }
+         Pageable pageable = PageRequest.of(page, size);
+         Page<Video> videosPage;
+
+         // Filter by chapter if provided
+         if (chapterId != null) {
+             videosPage = videoRepository.findBySchoolClassIdAndSubjectIdAndChapterIdAndStatus(
+                     student.getSchoolClass().getId(), subjectId, chapterId, Video.Status.PUBLISHED, pageable);
+         }
+         // Filter by subject only
+         else if (subjectId != null) {
+             videosPage = videoRepository.findBySchoolClassIdAndSubjectIdAndStatus(
+                     student.getSchoolClass().getId(), subjectId, Video.Status.PUBLISHED, pageable);
+         }
+         // No filters - this shouldn't happen but handle gracefully
+         else {
+             videosPage = Page.empty(pageable);
+         }
+
+         return buildPagedResponse(videosPage.map(this::mapVideoToResponse), page);
+     }
 
     @Transactional(readOnly = true)
     public PagedResponse<QuizResponse> getQuizzes(String username, Integer subjectId, Integer chapterId, int page, int size) {
@@ -121,13 +150,71 @@ public class StudentService {
 
         Pageable pageable = PageRequest.of(page, size);
         
-        // Convert Student.DifficultyLevel to Quiz.Difficulty
-        Quiz.Difficulty quizDifficulty = Quiz.Difficulty.valueOf(student.getDifficultyLevel().name());
-        
-        Page<Quiz> quizzesPage = quizRepository.findBySchoolClassIdAndDifficultyAndIsPublished(
-                student.getSchoolClass().getId(),
-                quizDifficulty,
-                true, pageable);
+        // DEBUG LOGS
+        log.debug("=== STUDENT QUIZ DEBUG START ===");
+        log.debug("Student ID: {}", student.getId());
+        log.debug("Student Username: {}", username);
+        log.debug("Student Class ID: {}", student.getSchoolClass().getId());
+        log.debug("Student Difficulty Level: {}", student.getDifficultyLevel());
+        log.debug("Subject ID Filter: {}", subjectId);
+        log.debug("Chapter ID Filter: {}", chapterId);
+
+         Page<Quiz> quizzesPage = null;
+
+         // If both subjectId and chapterId are provided, filter by them
+         if (subjectId != null && chapterId != null) {
+             log.debug("Querying with - ClassId: {}, SubjectId: {}, ChapterId: {}, Published: true",
+                 student.getSchoolClass().getId(), subjectId, chapterId);
+
+             quizzesPage = quizRepository.findBySchoolClassIdAndSubjectIdAndChapterIdAndIsPublished(
+                     student.getSchoolClass().getId(),
+                     subjectId,
+                     chapterId,
+                     true, pageable);
+         }
+         // If only subjectId is provided, filter by it
+         else if (subjectId != null) {
+             log.debug("Querying with - ClassId: {}, SubjectId: {}, Published: true",
+                 student.getSchoolClass().getId(), subjectId);
+
+             quizzesPage = quizRepository.findBySchoolClassIdAndSubjectIdAndIsPublished(
+                     student.getSchoolClass().getId(),
+                     subjectId,
+                     true, pageable);
+         }
+         // If neither is provided, fall back to difficulty-based filtering
+         else {
+             Quiz.Difficulty quizDifficulty = Quiz.Difficulty.valueOf(student.getDifficultyLevel().name());
+             log.debug("Querying with - ClassId: {}, Difficulty: {}, Published: true",
+                 student.getSchoolClass().getId(), quizDifficulty);
+
+             quizzesPage = quizRepository.findBySchoolClassIdAndDifficultyAndIsPublished(
+                     student.getSchoolClass().getId(),
+                     quizDifficulty,
+                     true, pageable);
+         }
+
+         log.debug("✓ Query completed!");
+         log.debug("Total quizzes found: {}", quizzesPage.getTotalElements());
+         log.debug("Page size: {}, Current page: {}, Total pages: {}",
+             quizzesPage.getSize(), quizzesPage.getNumber(), quizzesPage.getTotalPages());
+
+         if (quizzesPage.getTotalElements() > 0) {
+             log.debug("Quiz List:");
+             quizzesPage.getContent().forEach(q ->
+                 log.debug("  ✓ Quiz: id={}, title=\"{}\", classId={}, difficulty={}, published={}, questions={}",
+                     q.getId(), q.getTitle(), q.getSchoolClass().getId(), q.getDifficulty(),
+                     q.getIsPublished(), q.getQuestions() != null ? q.getQuestions().size() : 0)
+             );
+         } else {
+             log.debug("⚠ NO quizzes found matching criteria!");
+             log.debug("  Possible issues:");
+             log.debug("    1. No quizzes created yet");
+             log.debug("    2. Quizzes exist but with different class ID");
+             log.debug("    3. Quizzes exist but not published");
+             log.debug("    4. Quizzes exist but with different difficulty level");
+         }
+         log.debug("=== STUDENT QUIZ DEBUG END ===");
 
         return buildPagedResponse(quizzesPage.map(this::mapQuizToResponse), page);
     }

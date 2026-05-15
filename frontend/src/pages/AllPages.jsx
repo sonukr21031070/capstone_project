@@ -118,6 +118,7 @@ export function TeacherUploadNote() {
                 <option key={i} value={i}>Class {i}</option>
               ))}
             </select>
+            {errors.classId && <p role="alert" className="text-xs text-red-600 mt-1">{errors.classId.message}</p>}
           </div>
           <div>
             <label htmlFor="subjectId" className={labelClass}>{t('teacher.selectSubject')}</label>
@@ -129,6 +130,7 @@ export function TeacherUploadNote() {
               <option value="4">Science</option>
               <option value="5">Social Studies</option>
             </select>
+            {errors.subjectId && <p role="alert" className="text-xs text-red-600 mt-1">{errors.subjectId.message}</p>}
           </div>
           <div>
             <label htmlFor="chapterId" className={labelClass}>{t('teacher.selectChapter')}</label>
@@ -136,6 +138,7 @@ export function TeacherUploadNote() {
               <option value="">Chapter</option>
               {chapters.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
+            {errors.chapterId && <p role="alert" className="text-xs text-red-600 mt-1">{errors.chapterId.message}</p>}
           </div>
         </div>
 
@@ -551,18 +554,47 @@ export function QuizListPage() {
      enabled: !!selectedSubject
    })
 
-  const { data: quizzesData } = useQuery({
+  const { data: quizzesData, isLoading: isLoadingQuizzes, error: quizzesError } = useQuery({
     queryKey: ['student-quizzes', selectedSubject, selectedChapter],
-    queryFn: () => studentService.getQuizzes({ subjectId: selectedSubject, chapterId: selectedChapter }),
+    queryFn: () => {
+      console.log('🔍 [DEBUG] Fetching quizzes with params:', { subjectId: selectedSubject, chapterId: selectedChapter })
+      return studentService.getQuizzes({ subjectId: selectedSubject, chapterId: selectedChapter })
+    },
     enabled: !!selectedSubject
   })
 
-  // Update chapters when chaptersData changes
+  // Auto-select first subject on initial load
+  useEffect(() => {
+    if (subjectsData?.data && subjectsData.data.length > 0 && !selectedSubject) {
+      setSelectedSubject(subjectsData.data[0].id)
+    }
+  }, [subjectsData])
+
+  // Update chapters when chaptersData changes and auto-select first chapter
   useEffect(() => {
     if (chaptersData?.data) {
-      setChapters(chaptersData.data)
+      const chaptersArray = Array.isArray(chaptersData.data) ? chaptersData.data : (chaptersData.data.content || [])
+      setChapters(chaptersArray)
+      // Auto-select first chapter when chapters load
+      if (chaptersArray.length > 0 && !selectedChapter) {
+        setSelectedChapter(chaptersArray[0].id)
+      }
     }
-  }, [chaptersData])
+  }, [chaptersData, selectedChapter])
+
+  useEffect(() => {
+    if (quizzesData) {
+      console.log('✅ [DEBUG] Quizzes response received:', quizzesData)
+      console.log('📊 [DEBUG] Total quizzes:', quizzesData?.data?.totalElements)
+      console.log('📝 [DEBUG] Quiz list:', quizzesData?.data?.content)
+    }
+  }, [quizzesData])
+
+  useEffect(() => {
+    if (quizzesError) {
+      console.error('❌ [DEBUG] Quiz fetch error:', quizzesError)
+    }
+  }, [quizzesError])
 
   if (activeQuiz) {
     return <QuizPlayer quiz={activeQuiz} onComplete={() => setActiveQuiz(null)} />
@@ -570,6 +602,8 @@ export function QuizListPage() {
 
   const subjects = subjectsData?.data || []
   const quizzes  = quizzesData?.data?.content || []
+
+  console.log('🎯 [DEBUG] Rendering QuizListPage:', { selectedSubject, selectedChapter, quizzesCount: quizzes.length, isLoadingQuizzes })
 
   const diffColor = { EASY: 'text-green-600 bg-green-50', MEDIUM: 'text-amber-600 bg-amber-50', HARD: 'text-red-600 bg-red-50' }
 
@@ -579,7 +613,10 @@ export function QuizListPage() {
 
       <div className="flex flex-wrap gap-2">
         {subjects.map(s => (
-          <button key={s.id} onClick={() => { setSelectedSubject(s.id); setSelectedChapter(null) }}
+          <button key={s.id} onClick={() => {
+            console.log('📚 [DEBUG] Selected subject:', s.name, s.id)
+            setSelectedSubject(s.id); setSelectedChapter(null)
+          }}
             aria-pressed={selectedSubject === s.id}
             className={`px-4 py-2 rounded-full text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
               selectedSubject === s.id ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300 hover:border-indigo-400'
@@ -603,7 +640,10 @@ export function QuizListPage() {
               All Chapters
             </button>
             {chapters.map(c => (
-              <button key={c.id} onClick={() => setSelectedChapter(c.id)}
+              <button key={c.id} onClick={() => {
+                console.log('📖 [DEBUG] Selected chapter:', c.name, c.id)
+                setSelectedChapter(c.id)
+              }}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                   selectedChapter === c.id
                     ? 'bg-purple-600 text-white border-purple-600'

@@ -199,58 +199,78 @@ public class TeacherService {
 
     @Transactional
     public QuizResponse createQuiz(QuizRequest request, String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", username));
-        Teacher teacher = teacherRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
+         User user = userRepository.findByUsername(username)
+                 .orElseThrow(() -> new ResourceNotFoundException("User", username));
+         Teacher teacher = teacherRepository.findByUserId(user.getId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Teacher", user.getId()));
 
-        Chapter chapter = chapterRepository.findById(request.getChapterId())
-                .orElseThrow(() -> new ResourceNotFoundException("Chapter", request.getChapterId().longValue()));
-        SchoolClass schoolClass = schoolClassRepository.findById(request.getClassId())
-                .orElseThrow(() -> new ResourceNotFoundException("Class", request.getClassId().longValue()));
-        Subject subject = subjectRepository.findById(request.getSubjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Subject", request.getSubjectId().longValue()));
+         Chapter chapter = chapterRepository.findById(request.getChapterId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Chapter", request.getChapterId().longValue()));
+         SchoolClass schoolClass = schoolClassRepository.findById(request.getClassId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Class", request.getClassId().longValue()));
+         Subject subject = subjectRepository.findById(request.getSubjectId())
+                 .orElseThrow(() -> new ResourceNotFoundException("Subject", request.getSubjectId().longValue()));
 
-        Quiz quiz = Quiz.builder()
-                .teacher(teacher)
-                .chapter(chapter)
-                .schoolClass(schoolClass)
-                .subject(subject)
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .quizType(Quiz.QuizType.valueOf(request.getQuizType()))
-                .difficulty(Quiz.Difficulty.valueOf(request.getDifficulty()))
-                .totalMarks(request.getTotalMarks())
-                .passMarks(request.getPassMarks())
-                .timeLimitMins(request.getTimeLimitMins())
-                .isVoiceEnabled(request.getIsVoiceEnabled())
-                .isPublished(request.getIsPublished())
-                .build();
+         log.debug("=== QUIZ CREATE DEBUG START ===");
+         log.debug("Teacher: {} (ID: {})", username, teacher.getId());
+         log.debug("Class ID: {}, Subject ID: {}, Chapter ID: {}",
+             request.getClassId(), request.getSubjectId(), request.getChapterId());
+         log.debug("Quiz Title: {}", request.getTitle());
+         log.debug("Difficulty: {}, isPublished: {}", request.getDifficulty(), request.getIsPublished());
+         log.debug("Total Marks: {}, Pass Marks: {}, Duration: {}mins",
+             request.getTotalMarks(), request.getPassMarks(), request.getTimeLimitMins());
 
-        quiz = quizRepository.save(quiz);
+         Quiz quiz = Quiz.builder()
+                 .teacher(teacher)
+                 .chapter(chapter)
+                 .schoolClass(schoolClass)
+                 .subject(subject)
+                 .title(request.getTitle())
+                 .description(request.getDescription())
+                 .quizType(Quiz.QuizType.valueOf(request.getQuizType()))
+                 .difficulty(Quiz.Difficulty.valueOf(request.getDifficulty()))
+                 .totalMarks(request.getTotalMarks())
+                 .passMarks(request.getPassMarks())
+                 .timeLimitMins(request.getTimeLimitMins())
+                 .isVoiceEnabled(request.getIsVoiceEnabled())
+                 .isPublished(request.getIsPublished())
+                 .build();
 
-        List<Question> questions = new ArrayList<>();
-        for (QuestionRequest qReq : request.getQuestions()) {
-            Question question = Question.builder()
-                    .quiz(quiz)
-                    .questionText(qReq.getQuestionText())
-                    .questionHindi(qReq.getQuestionHindi())
-                    .questionPunjabi(qReq.getQuestionPunjabi())
-                    .questionType(Question.QuestionType.valueOf(qReq.getQuestionType()))
-                    .optionA(qReq.getOptionA())
-                    .optionB(qReq.getOptionB())
-                    .optionC(qReq.getOptionC())
-                    .optionD(qReq.getOptionD())
-                    .correctAnswer(qReq.getCorrectAnswer())
-                    .marks(qReq.getMarks())
-                    .orderIndex(qReq.getOrderIndex())
-                    .build();
-            questions.add(question);
-        }
-        quiz.setQuestions(questions);
+         quiz = quizRepository.save(quiz);
 
-        return mapQuizToResponse(quiz);
-    }
+         log.debug("✓ Quiz SAVED successfully!");
+         log.debug("  ID: {}", quiz.getId());
+         log.debug("  Title: {}", quiz.getTitle());
+         log.debug("  Published: {}", quiz.getIsPublished());
+         log.debug("  Difficulty: {}", quiz.getDifficulty());
+         log.debug("  Class: {} | Subject: {} | Chapter: {}",
+             quiz.getSchoolClass().getId(), quiz.getSubject().getId(), quiz.getChapter().getId());
+
+         List<Question> questions = new ArrayList<>();
+         for (QuestionRequest qReq : request.getQuestions()) {
+             Question question = Question.builder()
+                     .quiz(quiz)
+                     .questionText(qReq.getQuestionText())
+                     .questionHindi(qReq.getQuestionHindi())
+                     .questionPunjabi(qReq.getQuestionPunjabi())
+                     .questionType(Question.QuestionType.valueOf(qReq.getQuestionType()))
+                     .optionA(qReq.getOptionA())
+                     .optionB(qReq.getOptionB())
+                     .optionC(qReq.getOptionC())
+                     .optionD(qReq.getOptionD())
+                     .correctAnswer(qReq.getCorrectAnswer())
+                     .marks(qReq.getMarks())
+                     .orderIndex(qReq.getOrderIndex())
+                     .build();
+             questions.add(question);
+         }
+         quiz.setQuestions(questions);
+
+         log.debug("Added {} questions to quiz", questions.size());
+         log.debug("=== QUIZ CREATE DEBUG END ===");
+
+         return mapQuizToResponse(quiz);
+     }
 
     @Transactional
     public void publishQuiz(Long quizId, String username) {

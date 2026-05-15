@@ -178,6 +178,20 @@ export function NotesPage() {
   const chapters = chaptersData?.data || []
   const notes    = notesData?.data?.content || []
 
+  // Auto-select first subject on initial load
+  useEffect(() => {
+    if (subjects.length > 0 && !selectedSubject) {
+      setSelectedSubject(subjects[0].id)
+    }
+  }, [subjects, selectedSubject])
+
+  // Auto-select first chapter when chapters load
+  useEffect(() => {
+    if (chapters.length > 0 && !selectedChapter) {
+      setSelectedChapter(chapters[0].id)
+    }
+  }, [chapters, selectedChapter])
+
   const downloadForOffline = async (note) => {
     if (!note.pdfPath) return
     try {

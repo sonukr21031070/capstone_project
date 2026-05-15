@@ -25,6 +25,12 @@ export default function VideosPage() {
   }, [selectedSubject]);
 
   useEffect(() => {
+    if (chapters.length > 0 && !selectedChapter) {
+      setSelectedChapter(chapters[0].id);
+    }
+  }, [chapters, selectedChapter]);
+
+  useEffect(() => {
     if (selectedSubject) {
       loadVideos();
     }
